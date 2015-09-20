@@ -37,7 +37,9 @@ class Bullet: CCSprite {
                 if swipeLength > TouchDistanceThreshold {
                     let force = ccpMult(swipe, 200)
                     bulletPhysicsBody.applyForce(force)
-                    print("Apply Force: \(force)")
+                    #if DEBUG
+                    print("Apply Force |-> Bullet: \(force)")
+                    #endif
                 }
             }
         }

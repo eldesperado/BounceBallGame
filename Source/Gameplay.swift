@@ -8,42 +8,181 @@
 
 import Foundation
 
+enum Level: Int {
+    case Level1Scene = 1
+    case Level2Scene = 2
+    
+    init?(levelNumber: Int) {
+        self.init(rawValue: levelNumber)
+    }
+    
+    func getLevelName() -> String {
+        switch (self) {
+        case .Level1Scene:
+            return "Level1"
+        case .Level2Scene:
+            return "Level2"
+        }
+    }
+    
+    func getLevelFilePath() -> String {
+        return "Levels/" + self.getLevelName()
+    }
+}
+
 class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
-    weak var bullet: Bullet?
-    weak var target: Target?
+    weak var turnLabel: CCLabelTTF?
+    weak var timeLabel: CCLabelTTF?
+    weak var levelNode: CCNode?
     weak var gamePhysicsNode: CCPhysicsNode?
-
+    var walls: [Wall]?
+    var currentLevel: Level?
+    var remainingTime: Int? {
+        willSet {
+            if newValue == 0 {
+                self.gameOver()
+            }
+        }
+        didSet {
+            if let timeLabel = self.timeLabel, rTime = self.remainingTime {
+                timeLabel.string = "\(rTime)"
+            }
+        }
+    }
     
+    var remainingTurns: Int? {
+        willSet {
+            if newValue == 0 {
+                self.gameOver()
+            }
+        }
+        didSet {
+            if let turnLabel = self.turnLabel, rTurn = self.remainingTurns {
+                turnLabel.string = "\(rTurn)"
+            }
+        }
+    }
+    
+    // MARK: Initialization
     func didLoadFromCCB() {
-        // Setup
+        // Setup Gameplay
         self.setup()
     }
     
+    override init() {
+        super.init()
+        // Update GUI every minute
+        self.schedule("updateGUI:", interval: 1.0)
+    }
     
     override func onEnter() {
         super.onEnter()
     }
     
-    override func onEnterTransitionDidFinish() {
-        super.onEnterTransitionDidFinish()
+    override func update(delta: CCTime) {
+        
     }
     
+    // MARK: Game loop update
+    func updateGUI(delta: CCTimer) {
+        // Decrease the remaining time
+        self.updateRemainingTimer()
+    }
+    
+    // MARK: Gameplay
+    func nextAttemp() {
+        // Decrease the remaining turn by 1
+        if var rTurns = self.remainingTurns {
+            rTurns--
+        }
+        
+    }
+    
+    func nextLevel() {
+        guard let currLevel = self.currentLevel else { return }
+        let nextLevelNumber = currLevel.rawValue + 1
+        if let nextLevel = Level(levelNumber: nextLevelNumber) {
+            self.loadLevel(nextLevel)
+        }
+    }
+    
+    func loadLevel(targetLevel: Level) {
+        // Update Current Level
+        self.currentLevel = targetLevel
+        
+        let filePath = targetLevel.getLevelFilePath()
+        
+        switch (targetLevel) {
+            
+        case .Level1Scene:
+            if let scene: Level1 = CCBReader.load(filePath) as? Level1 {
+                addFirstChildForLevelNode(scene)
+                self.remainingTime = scene.time
+                self.remainingTurns = scene.turn
+            }
+        case .Level2Scene:
+            if let scene: Level2 = CCBReader.load(filePath) as? Level2 {
+                addFirstChildForLevelNode(scene)
+                self.remainingTime = scene.time
+                self.remainingTurns = scene.turn
+            }
+        }
+    }
+    
+    func gameOver() {
+        
+    }
     
     // MARK: Private Methods
     //MARK: Setup
     private func setup() {
-        guard let gPhysicsNode = self.gamePhysicsNode else { fatalError("Gameplay is not implemented!") }
         self.userInteractionEnabled = true
-        gPhysicsNode.collisionDelegate = self
-        // Initialize Nodes
-        self.initializeNodes()
-
+        if let pNode = self.gamePhysicsNode {
+            pNode.collisionDelegate = self
+            #if DEBUG
+                pNode.debugDraw = true
+            #else
+                pNode.debugDraw = false
+            #endif
+        }
+        
+        // If there is no level playing currently, then this is the show time of Level1
+        if self.currentLevel == nil {
+            self.currentLevel = Level.Level1Scene
+        }
+        
+        guard let currLevel = self.currentLevel else { fatalError("Current Level is not initialized") }
+        // Load current level
+        self.loadLevel(currLevel)
     }
     
     
     // MARK: Initialize Nodes
-    private func initializeNodes() {
-
+    private func initializeNodes(levelNode: CCNode) {
+        // Update array of wall containing in level node
+        self.walls = NodeHelper.findChildrenOfClass(Wall.self, forNode: levelNode) as? [Wall]
+        
+    }
+    
+    
+    private func addFirstChildForLevelNode(node: CCNode) {
+        guard let levelN = self.levelNode else { return }
+        let nodeName = "levelNode"
+        // Remove existed level node if had
+        if let existedNode = levelN.getChildByName(nodeName, recursively: true) {
+            levelN.removeChild(existedNode)
+        }
+        levelN.addChild(node, z: 0, name: nodeName)
+        // Initialize Nodes
+        self.initializeNodes(node)
+    }
+    
+    private func updateRemainingTimer() {
+        guard let rTime = self.remainingTime else { return }
+        if rTime <= 0 {
+            return
+        }
+        self.remainingTime!--
     }
 }

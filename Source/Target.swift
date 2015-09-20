@@ -10,4 +10,11 @@ import UIKit
 
 class Target: CCSprite {
     var rotationAngle: Float = 0
+    
+    func didLoadFromCCB() {
+        
+    }
+
+    
+    // MARK: Private Methods
 }
