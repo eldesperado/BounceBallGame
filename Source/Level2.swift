@@ -11,11 +11,6 @@ import UIKit
 class Level2: CCNode {
     weak var bullet: CCNode?
     weak var target: CCNode?
-    weak var blocker: CCNode?
-
-    weak var gamePlay: CCNode? {
-        return self.parent as? Gameplay
-    }
     
     let time = 15
     let turn = 3

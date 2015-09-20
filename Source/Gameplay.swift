@@ -36,6 +36,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     weak var timeLabel: CCLabelTTF?
     weak var levelNode: CCNode?
     weak var gamePhysicsNode: CCPhysicsNode?
+    weak var messageNode: Message?
     // MARK: Objects
     var walls: [Wall]?
     weak var bullet: Bullet?
@@ -135,11 +136,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     }
     
     func gameOver() {
-        
-    }
-    
-    func levelReset() {
-        
+        self.showGameOverMessageForm()
     }
     
     // MARK: Collision Handle
@@ -152,6 +149,10 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             // Add Post Step block to run code only once
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
                 print("Bullet collides with Target")
+                self.updateRemainingTurn()
+                if let aTarget = self.target {
+                    aTarget.exploreThenRemove()
+                }
                 }, key: aTarget)
         }
         
@@ -184,6 +185,10 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             #endif
         }
         
+        if let messNode = self.messageNode {
+            messNode.hideMessageForm()
+        }
+        self.currentLevel = Level.Level2Scene
         // If there is no level playing currently, then this is the show time of Level1
         if self.currentLevel == nil {
             self.currentLevel = Level.Level1Scene
@@ -227,5 +232,30 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             return
         }
         self.remainingTime!--
+    }
+    
+    private func updateRemainingTurn() {
+        guard let rTurn = self.remainingTurns else { return }
+        if rTurn <= 0 {
+            return
+        }
+        self.remainingTurns!--
+    }
+    
+    private func showGameOverMessageForm() {
+        guard let messageForm = self.messageNode else { return }
+        messageForm.showMessageForm("Game Over", buttonTitle: "Replay") { [unowned self] () -> () in
+            self.showMainScene()
+        }
+    }
+    
+    private func showNextLevelMessageForm() {
+        
+    }
+    
+    private func showMainScene() {
+        let mainScene = CCBReader.loadAsScene("MainScene")
+        let transition = CCTransition(crossFadeWithDuration: 0.5)
+        CCDirector.sharedDirector().presentScene(mainScene, withTransition: transition)
     }
 }

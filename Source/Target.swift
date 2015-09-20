@@ -17,7 +17,11 @@ class Target: CCSprite {
     }
 
     func exploreThenRemove() {
-        
+        guard let parentNode = self.parent else { return }
+        let explosion = CCBReader.load("Effects/Explosion") as! CCParticleSystem
+        explosion.position = self.position
+        parentNode.addChild(explosion)
+        self.removeFromParent()
     }
     
     // MARK: Private Methods
