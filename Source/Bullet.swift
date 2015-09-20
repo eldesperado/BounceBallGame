@@ -15,6 +15,8 @@ class Bullet: CCSprite {
     func didLoadFromCCB() {
         self.userInteractionEnabled = true
         self.multipleTouchEnabled = true
+        self.physicsBody.collisionType = CollisionType.Bullet.rawValue
+        self.physicsBody.collisionGroup = CollisionType.Bullet.getCollisionGroup()
     }
     
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {

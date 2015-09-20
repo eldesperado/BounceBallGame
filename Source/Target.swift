@@ -12,9 +12,13 @@ class Target: CCSprite {
     var rotationAngle: Float = 0
     
     func didLoadFromCCB() {
-        
+        self.physicsBody.collisionType = CollisionType.Target.rawValue
+        self.physicsBody.collisionGroup = CollisionType.Target.getCollisionGroup()
     }
 
+    func exploreThenRemove() {
+        
+    }
     
     // MARK: Private Methods
 }

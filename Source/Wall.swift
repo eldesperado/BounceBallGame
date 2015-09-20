@@ -9,5 +9,8 @@
 import UIKit
 
 class Wall: CCSprite {
-
+    func didLoadFromCCB() {
+        self.physicsBody.collisionType = CollisionType.Wall.rawValue
+        self.physicsBody.collisionGroup = CollisionType.Wall.getCollisionGroup()
+    }
 }

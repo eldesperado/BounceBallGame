@@ -31,12 +31,16 @@ enum Level: Int {
 }
 
 class Gameplay: CCNode, CCPhysicsCollisionDelegate {
-    
+    // MARK: GUI & Nodes
     weak var turnLabel: CCLabelTTF?
     weak var timeLabel: CCLabelTTF?
     weak var levelNode: CCNode?
     weak var gamePhysicsNode: CCPhysicsNode?
+    // MARK: Objects
     var walls: [Wall]?
+    weak var bullet: Bullet?
+    weak var target: Target?
+    // MARK: Game Properties
     var currentLevel: Level?
     var remainingTime: Int? {
         willSet {
@@ -134,6 +138,39 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         
     }
     
+    func levelReset() {
+        
+    }
+    
+    // MARK: Collision Handle
+    // Bullet collides with Target
+    func ccPhysicsCollisionPostSolve(pair: CCPhysicsCollisionPair!, Bullet aBullet: CCNode!, Target aTarget: CCNode!) {
+        guard let gPhysicsNode = self.gamePhysicsNode else { return }
+        let energy = pair.totalKineticEnergy
+        // Ignore all collision whose energy is below 0
+        if energy > 5000 {
+            // Add Post Step block to run code only once
+            gPhysicsNode.space.addPostStepBlock({ () -> Void in
+                print("Bullet collides with Target")
+                }, key: aTarget)
+        }
+        
+        
+    }
+    // Bullet collides with Wall
+    func ccPhysicsCollisionPostSolve(pair: CCPhysicsCollisionPair!, Bullet aBullet: CCNode!, Wall aWall: CCNode!) {
+        guard let gPhysicsNode = self.gamePhysicsNode else { return }
+        let energy = pair.totalKineticEnergy
+        // Ignore all collision whose energy is below 0
+        if energy > 5000 {
+            // Add Post Step block to run code only once
+            gPhysicsNode.space.addPostStepBlock({ () -> Void in
+                print("Bullet collides with Wall")
+                }, key: aWall)
+        }
+        
+    }
+    
     // MARK: Private Methods
     //MARK: Setup
     private func setup() {
@@ -162,6 +199,12 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     private func initializeNodes(levelNode: CCNode) {
         // Update array of wall containing in level node
         self.walls = NodeHelper.findChildrenOfClass(Wall.self, forNode: levelNode) as? [Wall]
+        if let bullets = NodeHelper.findChildrenOfClass(Bullet.self, forNode: levelNode) as? [Bullet] where bullets.count > 0 {
+            self.bullet = bullets.first
+        }
+        if let targets = NodeHelper.findChildrenOfClass(Target.self, forNode: levelNode) as? [Target] where targets.count > 0 {
+            self.target = targets.first
+        }
         
     }
     
