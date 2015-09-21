@@ -9,8 +9,8 @@
 import UIKit
 
 class Level2: CCNode {
-    weak var bullet: CCNode?
-    weak var target: CCNode?
+    weak var bullet: CCSprite?
+    weak var targetNode: CCNode?
     
     let time = 15
     let turn = 3

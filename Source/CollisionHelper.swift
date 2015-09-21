@@ -15,3 +15,4 @@ enum CollisionType: String {
         return self.rawValue + "Group"
     }
 }
+

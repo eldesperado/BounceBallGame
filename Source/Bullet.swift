@@ -11,12 +11,18 @@ import UIKit
 class Bullet: CCSprite {
     var touchLocation: CGPoint?
     var touchTime: CFTimeInterval = 0
+    var actionAfterSwipe: (()->())?
     
     func didLoadFromCCB() {
         self.userInteractionEnabled = true
         self.multipleTouchEnabled = true
         self.physicsBody.collisionType = CollisionType.Bullet.rawValue
         self.physicsBody.collisionGroup = CollisionType.Bullet.getCollisionGroup()
+    }
+    
+    override func update(delta: CCTime) {
+        // Track the movement of the bullet node
+        self.updatePreviousPosition()
     }
     
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
@@ -37,11 +43,21 @@ class Bullet: CCSprite {
                 let swipeLength = sqrt(swipe.x * swipe.x + swipe.y * swipe.y)
                 
                 if swipeLength > TouchDistanceThreshold {
+                    // Create the force
                     let force = ccpMult(swipe, 200)
+                    // Apply the force created by the swipe
                     bulletPhysicsBody.applyForce(force)
+
                     #if DEBUG
-                    print("Apply Force |-> Bullet: \(force)")
+                        print("Apply Force |-> Bullet: \(force)")
                     #endif
+                    
+                    // If the completion action closure is set, then do it
+                    if let action = self.actionAfterSwipe {
+                        action()
+                    }
+                    
+                    
                 }
             }
         }

@@ -16,17 +16,35 @@ enum Level: Int {
         self.init(rawValue: levelNumber)
     }
     
-    func getLevelName() -> String {
+    func getLevelName(isSeparatedByWhitespace: Bool = false) -> String {
         switch (self) {
         case .Level1Scene:
-            return "Level1"
+            if isSeparatedByWhitespace {
+                return "Level 1"
+            } else {
+                return "Level1"
+            }
         case .Level2Scene:
-            return "Level2"
+            if isSeparatedByWhitespace {
+                return "Level 2"
+            } else {
+                return "Level2"
+            }
         }
     }
     
     func getLevelFilePath() -> String {
         return "Levels/" + self.getLevelName()
+    }
+    
+    static var maxLevel: Int {  // Get max level available
+        var max: Int = 0
+        while let _ = self.init(rawValue: ++max) {}
+        if max >= 1 {
+            return --max
+        } else {
+            return 0
+        }
     }
 }
 
@@ -40,9 +58,10 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     // MARK: Objects
     var walls: [Wall]?
     weak var bullet: Bullet?
-    weak var target: Target?
+    weak var targetNode: CCNode?
     // MARK: Game Properties
     var currentLevel: Level?
+    var isPlayable = true
     var remainingTime: Int? {
         willSet {
             if newValue == 0 {
@@ -86,13 +105,14 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     }
     
     override func update(delta: CCTime) {
-        
     }
     
     // MARK: Game loop update
     func updateGUI(delta: CCTimer) {
-        // Decrease the remaining time
-        self.updateRemainingTimer()
+        if self.isPlayable {
+            // Decrease the remaining time
+            self.updateRemainingTimer()
+        }
     }
     
     // MARK: Gameplay
@@ -102,14 +122,6 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             rTurns--
         }
         
-    }
-    
-    func nextLevel() {
-        guard let currLevel = self.currentLevel else { return }
-        let nextLevelNumber = currLevel.rawValue + 1
-        if let nextLevel = Level(levelNumber: nextLevelNumber) {
-            self.loadLevel(nextLevel)
-        }
     }
     
     func loadLevel(targetLevel: Level) {
@@ -133,10 +145,21 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
                 self.remainingTurns = scene.turn
             }
         }
+        // Allow this game being playing
+        self.isPlayable = true
     }
     
     func gameOver() {
+        // Prevent this game from playing
+        self.isPlayable = false
+        // Show Game Over message form
         self.showGameOverMessageForm()
+    }
+    
+    func wonLevel() {
+        // Prevent this game from playing
+        self.isPlayable = false
+        self.showWinMessageForm()
     }
     
     // MARK: Collision Handle
@@ -149,9 +172,10 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             // Add Post Step block to run code only once
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
                 print("Bullet collides with Target")
-                self.updateRemainingTurn()
-                if let aTarget = self.target {
-                    aTarget.exploreThenRemove()
+                if let aTargetNode = self.targetNode {
+                    aTargetNode.blowupThenRemove({ [unowned self] () -> () in
+                        self.wonLevel()
+                    })
                 }
                 }, key: aTarget)
         }
@@ -188,7 +212,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         if let messNode = self.messageNode {
             messNode.hideMessageForm()
         }
-        self.currentLevel = Level.Level2Scene
+        
         // If there is no level playing currently, then this is the show time of Level1
         if self.currentLevel == nil {
             self.currentLevel = Level.Level1Scene
@@ -207,12 +231,22 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         if let bullets = NodeHelper.findChildrenOfClass(Bullet.self, forNode: levelNode) as? [Bullet] where bullets.count > 0 {
             self.bullet = bullets.first
         }
-        if let targets = NodeHelper.findChildrenOfClass(Target.self, forNode: levelNode) as? [Target] where targets.count > 0 {
-            self.target = targets.first
+        if let targetNodes = NodeHelper.findChildrenOfClass(TargetNode.self, forNode: levelNode) as? [TargetNode] where targetNodes.count > 0 {
+            self.targetNode = targetNodes.first
         }
-        
+        // Setup the bullet node
+        self.setupBulletNode()
     }
     
+    private func setupBulletNode() {
+        guard let bulletNode = self.bullet else { return }
+        // Setup action after every time the bullet is swiped
+        bulletNode.actionAfterSwipe = { [unowned self] in
+            // Update the remaining turn, every time you swiped, decrease the remaining turns by 1
+            // Track the movement of the bullet, as soon as the bullet stops moving, then updates the remaining turns
+            self.updateRemainingTurn()
+        }
+    }
     
     private func addFirstChildForLevelNode(node: CCNode) {
         guard let levelN = self.levelNode else { return }
@@ -244,13 +278,46 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     private func showGameOverMessageForm() {
         guard let messageForm = self.messageNode else { return }
-        messageForm.showMessageForm("Game Over", buttonTitle: "Replay") { [unowned self] () -> () in
+        messageForm.showMessageForm("Game Over", buttonTitle: "Menu") { [unowned self] () -> () in
             self.showMainScene()
         }
     }
     
-    private func showNextLevelMessageForm() {
-        
+    private func showWinMessageForm() {
+        guard let messageForm = self.messageNode, currLevel = self.currentLevel else { return }
+        // Set message
+        let winMessage = "You won \(currLevel.getLevelName(true))"
+        // Set title for button
+        let buttonTitle: String
+        let canMoveToNextLevel: Bool
+        if currLevel.rawValue < Level.maxLevel {
+            buttonTitle = "Next Level"
+            canMoveToNextLevel = true
+        } else {
+            buttonTitle = "Menu"
+            canMoveToNextLevel = false
+        }
+        // Set those above attributes to message form and display
+        messageForm.showMessageForm(winMessage, buttonTitle: buttonTitle) { [unowned self] () -> () in
+            if canMoveToNextLevel {
+                self.nextLevel()
+            } else {
+                self.showMainScene()
+            }
+        }
+    }
+    
+    private func nextLevel() {
+        guard let currLevel = self.currentLevel else { return }
+        // Move to next level
+        let nextLevelNumber = currLevel.rawValue + 1
+        if let nextLevel = Level(levelNumber: nextLevelNumber) {
+            self.loadLevel(nextLevel)
+        }
+        // Hide MessageForm
+        if let messNode = self.messageNode {
+            messNode.hideMessageForm()
+        }
     }
     
     private func showMainScene() {
@@ -258,4 +325,5 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         let transition = CCTransition(crossFadeWithDuration: 0.5)
         CCDirector.sharedDirector().presentScene(mainScene, withTransition: transition)
     }
+    
 }
