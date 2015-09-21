@@ -23,6 +23,7 @@ class Bullet: CCSprite {
     override func update(delta: CCTime) {
         // Track the movement of the bullet node
         self.updatePreviousPosition()
+
     }
     
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
@@ -52,12 +53,9 @@ class Bullet: CCSprite {
                         print("Apply Force |-> Bullet: \(force)")
                     #endif
                     
-                    // If the completion action closure is set, then do it
                     if let action = self.actionAfterSwipe {
                         action()
                     }
-                    
-                    
                 }
             }
         }

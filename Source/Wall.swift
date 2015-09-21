@@ -13,4 +13,10 @@ class Wall: CCSprite {
         self.physicsBody.collisionType = CollisionType.Wall.rawValue
         self.physicsBody.collisionGroup = CollisionType.Wall.getCollisionGroup()
     }
+    
+    func showCollisionContactEffect(contactLocation: CGPoint) {
+        guard let parentNode = self.parent, explosion = CCBReader.load("Effects/Bounce") as? CCParticleSystem else { return }
+        explosion.position = contactLocation
+        parentNode.addChild(explosion)
+    }
 }

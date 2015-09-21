@@ -5,11 +5,13 @@ class MainScene: CCNode {
     
     func didLoadFromCCB() {
         userInteractionEnabled = true
+        SoundHelper.sharedInstace.preloadSoundTracks()
     }
     
     override func onEnter() {
         super.onEnter()
         self.togglePlayButton(true)
+        SoundHelper.sharedInstace.playBGTrack(SoundTrack.Background)
     }
     
     func play(){
@@ -18,6 +20,7 @@ class MainScene: CCNode {
         let transition = CCTransition(crossFadeWithDuration: 0.5)
         CCDirector.sharedDirector().presentScene(gameplayScene, withTransition: transition)
     }
+    
     
     // MARK: Helpers
     private func togglePlayButton(isEnable: Bool) {

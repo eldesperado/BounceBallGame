@@ -13,7 +13,7 @@ import ObjectiveC
 // Found on http://stackoverflow.com/questions/24133058/is-there-a-way-to-set-associated-objects-in-swift
 var AssociatedObjectHandle: UInt8 = 0
 
-extension CCNode {
+extension CCNode {    
     var previousX: CGFloat? {
         get {
             return objc_getAssociatedObject(self, &AssociatedObjectHandle) as? CGFloat
@@ -32,27 +32,16 @@ extension CCNode {
         }
     }
     
-    var isStill: Bool? {
-        get {
-            return objc_getAssociatedObject(self, &AssociatedObjectHandle) as? Bool
-        }
-        set {
-            objc_setAssociatedObject(self, &AssociatedObjectHandle, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-    
     // MARK: Track the movement of the node
     // (http://stackoverflow.com/questions/23841286/how-to-know-when-all-physics-bodies-have-stopped-moving-in-cocos2d-v3-0-with-chi)
 
     func updatePreviousPosition() {
         self.previousX = self.position.x
         self.previousY = self.position.y
-        
-        self.isStill = self.hasntMoved()
     }
     
-    func hasntMoved() -> Bool {
-        guard let preX = self.previousX, preY = self.previousY else { return false }
+    func hasntMoved() -> Bool? {
+        guard let preX = self.previousX, preY = self.previousY else { return nil }
         let currentX = self.position.x
         let currentY = self.position.y
         
@@ -68,7 +57,10 @@ extension CCNode {
     func blowupThenRemove(completionAction:(()->())? = nil) {
         guard let parentNode = self.parent, explosion = CCBReader.load("Effects/Explosion") as? CCParticleSystem else { return }
         explosion.position = self.position
+        explosion.autoRemoveOnFinish = true
         parentNode.addChild(explosion)
+        // Play Bounce sound
+        SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Boom)
         self.removeFromParent()
         // Do completion Action if exists
         if let action = completionAction {

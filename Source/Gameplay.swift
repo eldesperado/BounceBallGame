@@ -8,46 +8,6 @@
 
 import Foundation
 
-enum Level: Int {
-    case Level1Scene = 1
-    case Level2Scene = 2
-    
-    init?(levelNumber: Int) {
-        self.init(rawValue: levelNumber)
-    }
-    
-    func getLevelName(isSeparatedByWhitespace: Bool = false) -> String {
-        switch (self) {
-        case .Level1Scene:
-            if isSeparatedByWhitespace {
-                return "Level 1"
-            } else {
-                return "Level1"
-            }
-        case .Level2Scene:
-            if isSeparatedByWhitespace {
-                return "Level 2"
-            } else {
-                return "Level2"
-            }
-        }
-    }
-    
-    func getLevelFilePath() -> String {
-        return "Levels/" + self.getLevelName()
-    }
-    
-    static var maxLevel: Int {  // Get max level available
-        var max: Int = 0
-        while let _ = self.init(rawValue: ++max) {}
-        if max >= 1 {
-            return --max
-        } else {
-            return 0
-        }
-    }
-}
-
 class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     // MARK: GUI & Nodes
     weak var turnLabel: CCLabelTTF?
@@ -147,6 +107,9 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         }
         // Allow this game being playing
         self.isPlayable = true
+        
+        // Resume the background sound
+        SoundHelper.sharedInstace.resumeBGAndStopEffect()
     }
     
     func gameOver() {
@@ -154,17 +117,19 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         self.isPlayable = false
         // Show Game Over message form
         self.showGameOverMessageForm()
+        SoundHelper.sharedInstace.playEffectTrack(SoundTrack.GameOver, loop: false)
     }
     
     func wonLevel() {
         // Prevent this game from playing
         self.isPlayable = false
         self.showWinMessageForm()
+        SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Won, loop: false)
     }
     
     // MARK: Collision Handle
     // Bullet collides with Target
-    func ccPhysicsCollisionPostSolve(pair: CCPhysicsCollisionPair!, Bullet aBullet: CCNode!, Target aTarget: CCNode!) {
+    func ccPhysicsCollisionPostSolve(pair: CCPhysicsCollisionPair!, Bullet aBullet: Bullet!, Target aTarget: Target!) {
         guard let gPhysicsNode = self.gamePhysicsNode else { return }
         let energy = pair.totalKineticEnergy
         // Ignore all collision whose energy is below 0
@@ -183,13 +148,15 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         
     }
     // Bullet collides with Wall
-    func ccPhysicsCollisionPostSolve(pair: CCPhysicsCollisionPair!, Bullet aBullet: CCNode!, Wall aWall: CCNode!) {
+    func ccPhysicsCollisionPostSolve(pair: CCPhysicsCollisionPair!, Bullet aBullet: Bullet!, Wall aWall: Wall!) {
         guard let gPhysicsNode = self.gamePhysicsNode else { return }
         let energy = pair.totalKineticEnergy
         // Ignore all collision whose energy is below 0
         if energy > 5000 {
             // Add Post Step block to run code only once
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
+                // Play Bounce sound
+                SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Bounce)
                 print("Bullet collides with Wall")
                 }, key: aWall)
         }
