@@ -21,7 +21,14 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     weak var targetNode: CCNode?
     // MARK: Game Properties
     var currentLevel: Level?
-    var isPlayable = true
+    var isPlayable = true {
+        didSet {
+            self.userInteractionEnabled = self.isPlayable
+            if let myBullet = self.bullet {
+                myBullet.userInteractionEnabled = self.isPlayable
+            }
+        }
+    }
     var remainingTime: Int? {
         willSet {
             if newValue == 0 {
@@ -37,7 +44,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     var remainingTurns: Int? {
         willSet {
-            if newValue == 0 {
+            if newValue == 0 && self.isPlayable == true {
                 self.gameOver()
             }
         }
@@ -82,13 +89,16 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     func nextAttemp() {
         guard let myBullet = self.bullet, initialPosition = self.initialBulletPosition else { return }
         // Stop this bullet from moving
+        myBullet.visible = false
         myBullet.stopMovement()
         // Return the bullet to the initial position
         myBullet.position = initialPosition
+        
         // Decrease the remaining turn by 1
         if var rTurns = self.remainingTurns {
             rTurns--
         }
+        myBullet.visible = true
         
     }
     
@@ -160,12 +170,12 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         guard let gPhysicsNode = self.gamePhysicsNode else { return }
         let energy = pair.totalKineticEnergy
         // Ignore all collision whose energy is below 0
+
         if energy > 5000 {
             // Add Post Step block to run code only once
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
                 // Play Bounce sound
                 SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Bounce)
-                print("Bullet collides with Wall")
                 }, key: aWall)
         }
         
@@ -222,7 +232,10 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             // Update the remaining turn, every time you swiped, decrease the remaining turns by 1
             // Track the movement of the bullet, as soon as the bullet stops moving, then updates the remaining turns
             self.updateRemainingTurn()
-            self.nextAttemp()
+            if self.isPlayable {
+                self.nextAttemp()
+            }
+
         }
     }
     

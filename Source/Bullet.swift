@@ -9,23 +9,25 @@
 import UIKit
 
 class Bullet: CCSprite {
-    var touchLocation: CGPoint?
-    var touchTime: CFTimeInterval = 0
     var actionAfterSwipe: (()->())?
     
     // MARK: Private Attributes
     private let arrow = CCBReader.load("Objects/Arrow") as? CCSprite
+    private let tail = CCBReader.load("Effects/Tail") as? CCParticleSystem
     private var isTouched = false {
         didSet {
             self.userInteractionEnabled = !self.isTouched
         }
     }
-    private let minVelocity = CGPointMake(10, 10)
+    private var touchLocation: CGPoint?
+    private var touchTime: CFTimeInterval = 0
+    private var flyTime: CFTimeInterval = 0
+    private let minAngularVelocity: CGFloat = 1.2
     private let maxVelocity = CGPointMake(80, 80)
+    private let forceConstant: CGFloat = 200
     
     func didLoadFromCCB() {
         self.userInteractionEnabled = true
-        self.multipleTouchEnabled = true
         self.physicsBody.collisionType = CollisionType.Bullet.rawValue
         self.physicsBody.collisionGroup = CollisionType.Bullet.getCollisionGroup()
         
@@ -35,6 +37,8 @@ class Bullet: CCSprite {
         super.onEnter()
         // Setup Arrow
         self.setupArrow()
+        // Setup Tail
+        self.setupTail()
     }
     
     override func update(delta: CCTime) {
@@ -42,15 +46,9 @@ class Bullet: CCSprite {
         self.updatePreviousPosition()
         // If this bullet has just been touched and it's slowing down, then whenever its velocity
         // reaches 50, then do action
-            
-        if self.isTouched == true && self.physicsBody.velocity <= self.minVelocity {
-            if let action = self.actionAfterSwipe {
-                action()
-            }
-            self.isTouched = false
-        }
-
+        self.actionWhenBulletSlowingDown()
     }
+    
     
     // MARK: Touches
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
@@ -89,10 +87,13 @@ class Bullet: CCSprite {
 
                     // Create the force
                     let reversedSwipe = -swipe
-                    let force = ccpMult(reversedSwipe, 200)
+                    let force = ccpMult(reversedSwipe, self.forceConstant)
                     // Apply the force created by the swipe
                     bulletPhysicsBody.applyForce(force)
 
+                    // Save Fly time
+                    self.flyTime = CACurrentMediaTime()
+                    
                     #if DEBUG
                         print("Apply Force |-> Bullet: \(force)")
                     #endif
@@ -100,6 +101,8 @@ class Bullet: CCSprite {
                     if let myArrow = self.arrow {
                         myArrow.visible = false
                     }
+                    // Update Tail position
+                    self.updateTailPosition()
                     self.isTouched = true
                 }
             }
@@ -121,11 +124,21 @@ class Bullet: CCSprite {
     private func setupArrow() {
         guard let myArrow = self.arrow, parentNode = self.parent else { return }
         myArrow.visible = false
-        let bulletPostion = self.getArrowPosition()
+        let bulletPostion = self.getBulletPositionInNodeSpace()
         myArrow.position = bulletPostion
         myArrow.anchorPoint = CGPointMake(0.5, 0)
         parentNode.addChild(myArrow)
     }
+    
+    private func setupTail() {
+        guard let myTail = self.tail else { return }
+        myTail.visible = false
+        let frame = CGPointMake(self.contentSize.width / 2, self.contentSize.height / 2)
+        myTail.rotation = self.rotation
+        myTail.position = frame
+        self.addChild(myTail)
+    }
+    
     private func getTouchLocationInParentNode(touch: CCTouch) -> CGPoint? {
         guard let parentNode = self.parent else { return nil }
         let location = touch.locationInNode(parentNode)
@@ -137,23 +150,57 @@ class Bullet: CCSprite {
         let angle = atan2f(Float(diffPoint.x), Float(diffPoint.y))
         myArrow.rotation = CC_RADIANS_TO_DEGREES(angle)
         #if DEBUG
-            print("Angle: \(CC_RADIANS_TO_DEGREES(angle))")
+            print("Rotation Angle of Arrow: \(CC_RADIANS_TO_DEGREES(angle))")
         #endif
         // Update Position
-        let bulletPostion = self.getArrowPosition()
+        let bulletPostion = self.getBulletPositionInNodeSpace()
         myArrow.position = bulletPostion
         myArrow.visible = true
-        
-        
+    }
+
+    
+    private func updateTailPosition() {
+        guard let myTail = self.tail else { return }
+        // Make the tail visible
+        myTail.visible = true
+        let force = self.physicsBody.force
+        let angle = atan2f(Float(force.x / self.forceConstant), Float(force.y / self.forceConstant))
+        myTail.rotation = CC_RADIANS_TO_DEGREES(angle)
+        #if DEBUG
+            print("Rotation Angle of Tail: \(CC_RADIANS_TO_DEGREES(angle))")
+        #endif
+
     }
     
-    private func getArrowPosition() -> CGPoint {
+    private func getBulletPositionInNodeSpace() -> CGPoint {
         let bulletPosition = self.physicsNode().convertToNodeSpace(self.position)
-        let arrowPosition = CGPointMake(bulletPosition.x, bulletPosition.y)
-        return arrowPosition
+        return bulletPosition
     }
     
     private func getMaximumProportion(pointA: CGPoint, _ pointB: CGPoint) -> Float {
         return max(abs(Float(pointA.x / pointB.x)), abs(Float(pointA.y / pointB.y)))
+    }
+    
+    private func actionWhenBulletSlowingDown() -> () {
+        let fliedTime = CACurrentMediaTime() - self.flyTime
+        if self.physicsBody.angularVelocity != 0 {
+            print("Angular Velocity: \(self.physicsBody.angularVelocity)")
+        }
+        if self.isTouched == true && self.physicsBody.angularVelocity != 0
+            && abs(self.physicsBody.angularVelocity) <= self.minAngularVelocity
+            && fliedTime > 1 {
+            // Hide the Tail
+            if let myTail = self.tail {
+                myTail.visible = false
+            }
+            
+            if let action = self.actionAfterSwipe {
+                action()
+            }
+            self.isTouched = false
+            return
+        }
+        
+
     }
 }
