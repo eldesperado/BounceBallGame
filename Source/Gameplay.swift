@@ -48,6 +48,9 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         }
     }
     
+    // MARK: Private Attributes
+    private var initialBulletPosition: CGPoint?
+    
     // MARK: Initialization
     func didLoadFromCCB() {
         // Setup Gameplay
@@ -77,6 +80,11 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     // MARK: Gameplay
     func nextAttemp() {
+        guard let myBullet = self.bullet, initialPosition = self.initialBulletPosition else { return }
+        // Stop this bullet from moving
+        myBullet.stopMovement()
+        // Return the bullet to the initial position
+        myBullet.position = initialPosition
         // Decrease the remaining turn by 1
         if var rTurns = self.remainingTurns {
             rTurns--
@@ -207,11 +215,14 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     private func setupBulletNode() {
         guard let bulletNode = self.bullet else { return }
+        // Save the intial position of this bullet for later
+        self.initialBulletPosition = bulletNode.position
         // Setup action after every time the bullet is swiped
         bulletNode.actionAfterSwipe = { [unowned self] in
             // Update the remaining turn, every time you swiped, decrease the remaining turns by 1
             // Track the movement of the bullet, as soon as the bullet stops moving, then updates the remaining turns
             self.updateRemainingTurn()
+            self.nextAttemp()
         }
     }
     

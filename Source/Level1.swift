@@ -12,7 +12,7 @@ class Level1: CCNode {
     weak var bullet: CCSprite?
     weak var targetNode: CCNode?
     
-    let time = 20
+    let time = 30
     let turn = 3
 
     // MARK: Initialization

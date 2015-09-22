@@ -13,7 +13,7 @@ class Level2: CCNode {
     weak var targetNode: CCNode?
     
     let time = 15
-    let turn = 3
+    let turn = 5
     
     // MARK: Initialization
     func didLoadFromCCB() {
