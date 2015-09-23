@@ -22,9 +22,11 @@ class Bullet: CCSprite {
     private var touchLocation: CGPoint?
     private var touchTime: CFTimeInterval = 0
     private var flyTime: CFTimeInterval = 0
-    private let minVelocity = CGPointMake(10, 10)
+    private let minVelocity = CGPointMake(20, 20)
     private let maxVelocity = CGPointMake(80, 80)
     private let forceConstant: CGFloat = 200
+    private let minFliedTime: Double = 1
+    private let maxFliedTime: Double = 3.5
     
     func didLoadFromCCB() {
         self.userInteractionEnabled = true
@@ -183,25 +185,41 @@ class Bullet: CCSprite {
     
     private func actionWhenBulletSlowingDown() -> () {
         let fliedTime = CACurrentMediaTime() - self.flyTime
-        // Determine whether its velocity is slowing down
-        let isSlowDown = self.physicsBody.velocity ~<= self.minVelocity
         
-        print("Velocity: \(self.physicsBody.velocity) - isSlowDown: \(isSlowDown)")
-        if self.isTouched == true && self.physicsBody.angularVelocity != 0
-            && isSlowDown
-            && fliedTime > 1 {
-            // Hide the Tail
-            if let myTail = self.tail {
-                myTail.visible = false
+        // The Bullet had to flied at least the minimum fly time to be able to do Action
+        if self.isTouched == true && fliedTime >= self.minFliedTime && self.flyTime != 0 {
+            // If the bullet flied too long, exceeded the maximum fly time, then do Action now, after that, return
+            if fliedTime >= self.maxFliedTime {
+                // Do Action, then return
+                self.doActionAfterSwipe()
+                return
             }
             
-            if let action = self.actionAfterSwipe {
-                action()
+            // Determine whether its velocity is slowing down
+            let isSlowDown = self.physicsBody.velocity ~<= self.minVelocity
+            
+            #if DEBUG
+                print("Velocity of Bullet: \(self.physicsBody.velocity) at \(fliedTime) - isSlowDown: \(isSlowDown)")
+            #endif
+
+            if isSlowDown  {
+                // Do Action
+                self.doActionAfterSwipe()
+                return
             }
-            self.isTouched = false
-            return
+
         }
         
 
+    }
+    
+    private func doActionAfterSwipe() {
+        guard let action = self.actionAfterSwipe else { return }
+        action()
+        // Hide the Tail
+        if let myTail = self.tail {
+            myTail.visible = false
+        }
+        self.isTouched = false
     }
 }
