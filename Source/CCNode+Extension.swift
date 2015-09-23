@@ -54,16 +54,34 @@ extension CCNode: ParticleEffectProtocol {
     
     // MARK: Effects
     
-    func blowupThenRemove(completionAction:(()->())? = nil) {
-        guard let parentNode = self.parent, explosion = self.createExplosionParticle() else { return }
-        explosion.position = self.position
-        parentNode.addChild(explosion)
+    func showBlowupEffect(soundTrack: SoundTrack? = nil, removeFromParent: Bool? = false, completionAction:(()->())? = nil) {
+        guard let particle = self.createExplosionParticle() else { return }
+        self.displayParticle(particle, soundTrack: soundTrack, removeFromParent: removeFromParent, completionAction: completionAction)
+    }
+    
+    func showDisappearEffect(soundTrack: SoundTrack? = nil, removeFromParent: Bool? = false, completionAction:(()->())? = nil) {
+        guard let particle = self.createDisappearParticle() else { return }
+        self.displayParticle(particle, soundTrack: soundTrack, removeFromParent: removeFromParent, completionAction: completionAction)
+    }
+    
+    private func displayParticle(particle: CCParticleSystem, soundTrack: SoundTrack? = SoundTrack.Boom, removeFromParent: Bool? = false, completionAction:(()->())? = nil) {
+        guard let parentNode = self.parent else { return }
+        particle.position = self.position
+        parentNode.addChild(particle)
         // Play Bounce sound
-        SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Boom)
-        self.removeFromParent()
+        if let track = soundTrack {
+            SoundHelper.sharedInstace.playEffectTrack(track)
+        }
+        if let removeAction = removeFromParent where removeAction == true {
+            self.removeFromParent()
+        }
+
         // Do completion Action if exists
         if let action = completionAction {
-            action()
+            let particleLifeTime = Double(ParticleHelper.getParticleLongestLife(particle))
+            delay(particleLifeTime, closure: { () -> () in
+                action()
+            })
         }
     }
 }

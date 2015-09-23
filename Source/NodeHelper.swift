@@ -28,4 +28,15 @@ struct NodeHelper {
         }
 
     }
+    
+    static func calculateAngleBetweenTwoPoints(pointA: CGPoint, pointB: CGPoint, inDegree: Bool = true) -> Float {
+        let deltaX: CGFloat = pointB.x - pointA.x
+        let deltaY: CGFloat = pointB.y - pointA.y
+        let angle = atan2f(Float(deltaY), Float(deltaX))
+
+        if inDegree {
+            return CC_RADIANS_TO_DEGREES(angle)
+        }
+        return angle
+    }
 }

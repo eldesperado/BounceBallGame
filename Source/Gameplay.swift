@@ -78,7 +78,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     }
     
     // MARK: Game loop update
-    func updateGUI(delta: CCTimer) {
+    internal func updateGUI(delta: CCTimer) {
         if self.isPlayable {
             // Decrease the remaining time
             self.updateRemainingTimer()
@@ -89,17 +89,22 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     func nextAttemp() {
         guard let myBullet = self.bullet, initialPosition = self.initialBulletPosition else { return }
         // Stop this bullet from moving
-        myBullet.visible = false
         myBullet.stopMovement()
-        // Return the bullet to the initial position
-        myBullet.position = initialPosition
-        
-        // Decrease the remaining turn by 1
-        if var rTurns = self.remainingTurns {
-            rTurns--
+        myBullet.visible = false
+        // Display Disappear Particle
+        myBullet.showDisappearEffect(removeFromParent: false) { () -> () in
+            // Reset Bullet
+            myBullet.reset()
+            // Return the bullet to the initial position
+            myBullet.position = initialPosition
+            
+            // Decrease the remaining turn by 1
+            if var rTurns = self.remainingTurns {
+                rTurns--
+            }
+            myBullet.visible = true
+
         }
-        myBullet.visible = true
-        
     }
     
     func loadLevel(targetLevel: Level) {
@@ -156,7 +161,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
                 print("Bullet collides with Target")
                 if let aTargetNode = self.targetNode {
-                    aTargetNode.blowupThenRemove({ [unowned self] () -> () in
+                    aTargetNode.showBlowupEffect(removeFromParent: true, completionAction: { [unowned self] () -> () in
                         self.wonLevel()
                     })
                 }

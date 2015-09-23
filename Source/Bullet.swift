@@ -27,6 +27,8 @@ class Bullet: CCSprite {
     private let forceConstant: CGFloat = 200
     private let minFliedTime: Double = 1
     private let maxFliedTime: Double = 3.5
+    private var movementAngle: Float = 0
+    private var previousPostion: CGPoint?
     
     func didLoadFromCCB() {
         self.userInteractionEnabled = true
@@ -41,6 +43,8 @@ class Bullet: CCSprite {
         self.setupArrow()
         // Setup Tail
         self.setupTail()
+        // Update Movement Angle
+        self.schedule("updateMovementAngle", interval: 0.1)
     }
     
     override func update(delta: CCTime) {
@@ -49,10 +53,32 @@ class Bullet: CCSprite {
         // If this bullet has just been touched and it's slowing down, then whenever its velocity
         // reaches 50, then do action
         self.actionWhenBulletSlowingDown()
+        
+        if self.isTouched {
+            self.updateTailPosition()
+        }
+    }
+    
+    // MARK: Public Methods
+    func stopMovement() {
+        self.physicsBody.velocity = CGPointZero
+        self.physicsBody.angularVelocity = 0
+    }
+    
+    func reset() {
+        self.rotation = 0
+        if let myTail = self.tail {
+            myTail.rotation = 0
+        }
     }
     
     
-    // MARK: Touches
+    func showDisappearEffect() {
+        let particle = self.createDisappearParticle()
+        self.addChild(particle)
+    }
+    
+    // MARK: Overriden Touches
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
         let location = self.getTouchLocationInParentNode(touch)
         self.touchLocation = location
@@ -103,8 +129,7 @@ class Bullet: CCSprite {
                     if let myArrow = self.arrow {
                         myArrow.visible = false
                     }
-                    // Update Tail position
-                    self.updateTailPosition()
+
                     self.isTouched = true
                 }
             }
@@ -116,13 +141,8 @@ class Bullet: CCSprite {
         touchEnded(touch, withEvent: event)
     }
     
-    // MARK: Public Methods
-    func stopMovement() {
-        self.physicsBody.velocity = CGPointZero
-        self.physicsBody.angularVelocity = 0
-    }
+    // MARK: Private Methods
     
-    // MARK: Helpers
     private func setupArrow() {
         guard let myArrow = self.arrow, parentNode = self.parent else { return }
         myArrow.visible = false
@@ -165,11 +185,9 @@ class Bullet: CCSprite {
         guard let myTail = self.tail else { return }
         // Make the tail visible
         myTail.visible = true
-        let force = self.physicsBody.force
-        let angle = atan2f(Float(force.x / self.forceConstant), Float(force.y / self.forceConstant))
-        myTail.rotation = CC_RADIANS_TO_DEGREES(angle)
+        myTail.angle = self.movementAngle
         #if DEBUG
-            print("Rotation Angle of Tail: \(CC_RADIANS_TO_DEGREES(angle))")
+            
         #endif
 
     }
@@ -209,8 +227,6 @@ class Bullet: CCSprite {
             }
 
         }
-        
-
     }
     
     private func doActionAfterSwipe() {
@@ -221,5 +237,15 @@ class Bullet: CCSprite {
             myTail.visible = false
         }
         self.isTouched = false
+    }
+    
+    internal func updateMovementAngle() {
+        if let prevPost = self.previousPostion {
+            self.movementAngle = NodeHelper.calculateAngleBetweenTwoPoints(self.position, pointB: prevPost)
+            previousPostion = self.position
+
+        } else {
+            self.previousPostion = self.position
+        }
     }
 }

@@ -10,12 +10,32 @@ import Foundation
 
 protocol ParticleEffectProtocol {
     func createExplosionParticle() -> CCParticleSystem?
+    func createDisappearParticle() -> CCParticleSystem?
 }
 
 extension ParticleEffectProtocol  {
     func createExplosionParticle() -> CCParticleSystem? {
-        guard let explosion = CCBReader.load("Effects/Explosion") as? CCParticleSystem else  { return nil }
-        explosion.autoRemoveOnFinish = true
+        let explosion = ParticleHelper.createParticle("Explosion")
         return explosion
+    }
+    
+    func createDisappearParticle() -> CCParticleSystem? {
+        let particle = ParticleHelper.createParticle("Disappear")
+        return particle
+    }
+}
+
+struct ParticleHelper {
+    static func createParticle(particleName: String, autoRemoveOnFinish: Bool = true) -> CCParticleSystem? {
+        let filePath = "Effects/" + particleName
+        if let particle = CCBReader.load(filePath) as? CCParticleSystem {
+            particle.autoRemoveOnFinish = autoRemoveOnFinish
+            return particle
+        }
+        return nil
+    }
+    
+    static func getParticleLongestLife(particle: CCParticleSystem) -> Float {
+        return particle.life + particle.lifeVar
     }
 }
