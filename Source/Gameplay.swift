@@ -161,8 +161,8 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
                 print("Bullet collides with Target")
                 if let aTargetNode = self.targetNode {
-                    aTargetNode.showBlowupEffect(removeFromParent: true, completionAction: { [unowned self] () -> () in
-                        self.wonLevel()
+                    aTargetNode.showBlowupEffect(removeFromParent: true, completionAction: { [weak self] () -> () in
+                        self?.wonLevel()
                     })
                 }
                 }, key: aTarget)
@@ -233,12 +233,14 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         // Save the intial position of this bullet for later
         self.initialBulletPosition = bulletNode.position
         // Setup action after every time the bullet is swiped
-        bulletNode.actionAfterSwipe = { [unowned self] in
+        bulletNode.actionAfterSwipe = { [weak self] in
             // Update the remaining turn, every time you swiped, decrease the remaining turns by 1
             // Track the movement of the bullet, as soon as the bullet stops moving, then updates the remaining turns
-            self.updateRemainingTurn()
-            if self.isPlayable {
-                self.nextAttemp()
+            if let instance = self {
+                instance.updateRemainingTurn()
+                if instance.isPlayable {
+                    instance.nextAttemp()
+                }
             }
 
         }
@@ -274,8 +276,8 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     private func showGameOverMessageForm() {
         guard let messageForm = self.messageNode else { return }
-        messageForm.showMessageForm("Game Over", buttonTitle: "Menu") { [unowned self] () -> () in
-            self.showMainScene()
+        messageForm.showMessageForm("Game Over", buttonTitle: "Menu") { [weak self] () -> () in
+            self?.showMainScene()
         }
     }
     
@@ -294,11 +296,11 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             canMoveToNextLevel = false
         }
         // Set those above attributes to message form and display
-        messageForm.showMessageForm(winMessage, buttonTitle: buttonTitle) { [unowned self] () -> () in
+        messageForm.showMessageForm(winMessage, buttonTitle: buttonTitle) { [weak self] () -> () in
             if canMoveToNextLevel {
-                self.nextLevel()
+                self?.nextLevel()
             } else {
-                self.showMainScene()
+                self?.showMainScene()
             }
         }
     }

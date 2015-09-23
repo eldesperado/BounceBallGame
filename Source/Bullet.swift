@@ -44,7 +44,7 @@ class Bullet: CCSprite {
         // Setup Tail
         self.setupTail()
         // Update Movement Angle
-        self.schedule("updateMovementAngle", interval: 0.1)
+        self.schedule("updateMovementAngle", interval: 1 / 60)
     }
     
     override func update(delta: CCTime) {
@@ -83,6 +83,7 @@ class Bullet: CCSprite {
         let location = self.getTouchLocationInParentNode(touch)
         self.touchLocation = location
         self.touchTime = CACurrentMediaTime()
+
         // Update isTouched
         self.isTouched = false
     }
@@ -125,20 +126,20 @@ class Bullet: CCSprite {
                     #if DEBUG
                         print("Apply Force |-> Bullet: \(force)")
                     #endif
-                    // Hide arrow
-                    if let myArrow = self.arrow {
-                        myArrow.visible = false
-                    }
 
                     self.isTouched = true
                 }
+            }
+            // Hide arrow
+            if let myArrow = self.arrow {
+                myArrow.visible = false
             }
         }
         
     }
     
     override func touchCancelled(touch: CCTouch!, withEvent event: CCTouchEvent!) {
-        touchEnded(touch, withEvent: event)
+        self.touchEnded(touch, withEvent: event)
     }
     
     // MARK: Private Methods
