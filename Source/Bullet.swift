@@ -22,7 +22,7 @@ class Bullet: CCSprite {
     private var touchLocation: CGPoint?
     private var touchTime: CFTimeInterval = 0
     private var flyTime: CFTimeInterval = 0
-    private let minAngularVelocity: CGFloat = 1.2
+    private let minVelocity = CGPointMake(10, 10)
     private let maxVelocity = CGPointMake(80, 80)
     private let forceConstant: CGFloat = 200
     
@@ -183,11 +183,12 @@ class Bullet: CCSprite {
     
     private func actionWhenBulletSlowingDown() -> () {
         let fliedTime = CACurrentMediaTime() - self.flyTime
-        if self.physicsBody.angularVelocity != 0 {
-            print("Angular Velocity: \(self.physicsBody.angularVelocity)")
-        }
+        // Determine whether its velocity is slowing down
+        let isSlowDown = self.physicsBody.velocity ~<= self.minVelocity
+        
+        print("Velocity: \(self.physicsBody.velocity) - isSlowDown: \(isSlowDown)")
         if self.isTouched == true && self.physicsBody.angularVelocity != 0
-            && abs(self.physicsBody.angularVelocity) <= self.minAngularVelocity
+            && isSlowDown
             && fliedTime > 1 {
             // Hide the Tail
             if let myTail = self.tail {

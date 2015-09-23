@@ -13,7 +13,7 @@ import ObjectiveC
 // Found on http://stackoverflow.com/questions/24133058/is-there-a-way-to-set-associated-objects-in-swift
 var AssociatedObjectHandle: UInt8 = 0
 
-extension CCNode {    
+extension CCNode: ParticleEffectProtocol {
     var previousX: CGFloat? {
         get {
             return objc_getAssociatedObject(self, &AssociatedObjectHandle) as? CGFloat
@@ -55,9 +55,8 @@ extension CCNode {
     // MARK: Effects
     
     func blowupThenRemove(completionAction:(()->())? = nil) {
-        guard let parentNode = self.parent, explosion = CCBReader.load("Effects/Explosion") as? CCParticleSystem else { return }
+        guard let parentNode = self.parent, explosion = self.createExplosionParticle() else { return }
         explosion.position = self.position
-        explosion.autoRemoveOnFinish = true
         parentNode.addChild(explosion)
         // Play Bounce sound
         SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Boom)
