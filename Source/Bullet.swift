@@ -43,8 +43,6 @@ class Bullet: CCSprite {
         self.setupArrow()
         // Setup Tail
         self.setupTail()
-        // Update Movement Angle
-        self.schedule("updateMovementAngle", interval: 1 / 60)
     }
     
     override func update(delta: CCTime) {
@@ -53,6 +51,8 @@ class Bullet: CCSprite {
         // If this bullet has just been touched and it's slowing down, then whenever its velocity
         // reaches 50, then do action
         self.actionWhenBulletSlowingDown()
+        
+        self.updateMovementAngle()
         
         if self.isTouched {
             self.updateTailPosition()

@@ -159,12 +159,13 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         if energy > 5000 {
             // Add Post Step block to run code only once
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
-                print("Bullet collides with Target")
                 if let aTargetNode = self.targetNode {
                     aTargetNode.showBlowupEffect(removeFromParent: true, completionAction: { [weak self] () -> () in
                         self?.wonLevel()
-                    })
+                        })
                 }
+                
+                aBullet.showDisappearEffect(removeFromParent: true)
                 }, key: aTarget)
         }
         
