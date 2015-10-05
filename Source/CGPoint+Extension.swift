@@ -29,3 +29,10 @@ func delay(delay:Double, closure:()->()) {
         ),
         dispatch_get_main_queue(), closure)
 }
+
+
+extension CGPoint {
+    func getMaximumProportion(point: CGPoint) -> Float {
+        return max(abs(Float(self.x / point.x)), abs(Float(self.y / point.y)))
+    }
+}

@@ -15,13 +15,18 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     weak var levelNode: CCNode?
     weak var gamePhysicsNode: CCPhysicsNode?
     weak var messageNode: Message?
+    
     // MARK: Objects
-    var walls: [Wall]?
+    private var walls: [Wall]?
     weak var bullet: Bullet?
     weak var targetNode: CCNode?
     // MARK: Game Properties
     var currentLevel: Level?
-    var isPlayable = true {
+    
+    // MARK: Private Attributes
+    private var initialBulletPosition: CGPoint?
+    
+    private var isPlayable = true {
         didSet {
             self.userInteractionEnabled = self.isPlayable
             if let myBullet = self.bullet {
@@ -29,7 +34,8 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             }
         }
     }
-    var remainingTime: Int? {
+    
+    private var remainingTime: Int? {
         willSet {
             if newValue == 0 {
                 self.gameOver()
@@ -42,7 +48,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         }
     }
     
-    var remainingTurns: Int? {
+    private var remainingTurns: Int? {
         willSet {
             if newValue == 0 && self.isPlayable == true {
                 self.gameOver()
@@ -54,9 +60,6 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             }
         }
     }
-    
-    // MARK: Private Attributes
-    private var initialBulletPosition: CGPoint?
     
     // MARK: Initialization
     func didLoadFromCCB() {
@@ -74,39 +77,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         super.onEnter()
     }
     
-    override func update(delta: CCTime) {
-    }
-    
-    // MARK: Game loop update
-    internal func updateGUI(delta: CCTimer) {
-        if self.isPlayable {
-            // Decrease the remaining time
-            self.updateRemainingTimer()
-        }
-    }
-    
-    // MARK: Gameplay
-    func nextAttemp() {
-        guard let myBullet = self.bullet, initialPosition = self.initialBulletPosition else { return }
-        // Stop this bullet from moving
-        myBullet.stopMovement()
-        myBullet.visible = false
-        // Display Disappear Particle
-        myBullet.showDisappearEffect(removeFromParent: false) { () -> () in
-            // Reset Bullet
-            myBullet.reset()
-            // Return the bullet to the initial position
-            myBullet.position = initialPosition
-            
-            // Decrease the remaining turn by 1
-            if var rTurns = self.remainingTurns {
-                rTurns--
-            }
-            myBullet.visible = true
-
-        }
-    }
-    
+    // MARK: Public Methods
     func loadLevel(targetLevel: Level) {
         // Update Current Level
         self.currentLevel = targetLevel
@@ -132,22 +103,70 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         self.isPlayable = true
         
         // Resume the background sound
-        SoundHelper.sharedInstace.resumeBGAndStopEffect()
+        SoundManager.sharedInstace.resumeBGAndStopEffect()
     }
     
-    func gameOver() {
+    // MARK: Game loop update
+    internal func updateGUI(delta: CCTimer) {
+        if self.isPlayable {
+            // Decrease the remaining time
+            self.updateRemainingTimer()
+        }
+    }
+    
+    // MARK: Gameplay
+    internal func nextAttemp() {
+        guard let myBullet = self.bullet, initialPosition = self.initialBulletPosition else { return }
+        
+        // Stop this bullet from moving
+        myBullet.stopMovement()
+        myBullet.visible = false
+        // Display Disappear Particle
+        myBullet.showDisappearEffect(removeFromParent: false) { () -> () in
+            // Reset Bullet
+            myBullet.reset()
+            // Return the bullet to the initial position
+            myBullet.position = initialPosition
+            
+            // Decrease the remaining turn by 1
+            if var rTurns = self.remainingTurns {
+                rTurns--
+            }
+            myBullet.visible = true
+
+        }
+    }
+    
+    internal func gameOver() {
         // Prevent this game from playing
         self.isPlayable = false
+      // Stop the bullet moving
+      bullet?.stopMovement()
         // Show Game Over message form
         self.showGameOverMessageForm()
-        SoundHelper.sharedInstace.playEffectTrack(SoundTrack.GameOver, loop: false)
+        SoundManager.sharedInstace.playEffectTrack(SoundTrack.GameOver, loop: false)
     }
     
-    func wonLevel() {
+    internal func wonLevel() {
         // Prevent this game from playing
         self.isPlayable = false
+      // Stop the bullet moving
+      bullet?.stopMovement()
         self.showWinMessageForm()
-        SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Won, loop: false)
+        SoundManager.sharedInstace.playEffectTrack(SoundTrack.Won, loop: false)
+    }
+    
+    internal func nextLevel() {
+        guard let currLevel = self.currentLevel else { return }
+        // Move to next level
+        let nextLevelNumber = currLevel.rawValue + 1
+        if let nextLevel = Level(levelNumber: nextLevelNumber) {
+            self.loadLevel(nextLevel)
+        }
+        // Hide MessageForm
+        if let messNode = self.messageNode {
+            messNode.hideMessageForm()
+        }
     }
     
     // MARK: Collision Handle
@@ -160,7 +179,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             // Add Post Step block to run code only once
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
                 if let aTargetNode = self.targetNode {
-                    aTargetNode.showBlowupEffect(removeFromParent: true, completionAction: { [weak self] () -> () in
+                  aTargetNode.showBlowupEffect(SoundTrack.Boom, removeFromParent: true, completionAction: { [weak self] () -> () in
                         self?.wonLevel()
                         })
                 }
@@ -181,7 +200,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             // Add Post Step block to run code only once
             gPhysicsNode.space.addPostStepBlock({ () -> Void in
                 // Play Bounce sound
-                SoundHelper.sharedInstace.playEffectTrack(SoundTrack.Bounce)
+                SoundManager.sharedInstace.playEffectTrack(SoundTrack.Bounce)
                 }, key: aWall)
         }
         
@@ -200,9 +219,8 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
             #endif
         }
         
-        if let messNode = self.messageNode {
-            messNode.hideMessageForm()
-        }
+        // Hide Message Form if existed
+        self.messageNode?.hideMessageForm()
         
         // If there is no level playing currently, then this is the show time of Level1
         if self.currentLevel == nil {
@@ -218,10 +236,13 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     // MARK: Initialize Nodes
     private func initializeNodes(levelNode: CCNode) {
         // Update array of wall containing in level node
+        // Get Walls
         self.walls = NodeHelper.findChildrenOfClass(Wall.self, forNode: levelNode) as? [Wall]
+        // Get Bullet
         if let bullets = NodeHelper.findChildrenOfClass(Bullet.self, forNode: levelNode) as? [Bullet] where bullets.count > 0 {
             self.bullet = bullets.first
         }
+        // Get Target Node
         if let targetNodes = NodeHelper.findChildrenOfClass(TargetNode.self, forNode: levelNode) as? [TargetNode] where targetNodes.count > 0 {
             self.targetNode = targetNodes.first
         }
@@ -277,45 +298,26 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     private func showGameOverMessageForm() {
         guard let messageForm = self.messageNode else { return }
-        messageForm.showMessageForm("Game Over", buttonTitle: "Menu") { [weak self] () -> () in
+        messageForm.applyStyle(MessageStyle.GameOver) { [weak self] _ in
             self?.showMainScene()
         }
     }
     
     private func showWinMessageForm() {
         guard let messageForm = self.messageNode, currLevel = self.currentLevel else { return }
-        // Set message
-        let winMessage = "You won \(currLevel.getLevelName(true))"
-        // Set title for button
-        let buttonTitle: String
-        let canMoveToNextLevel: Bool
-        if currLevel.rawValue < Level.maxLevel {
-            buttonTitle = "Next Level"
-            canMoveToNextLevel = true
-        } else {
-            buttonTitle = "Menu"
-            canMoveToNextLevel = false
-        }
+
+        let messageStyle = MessageStyle(level: currLevel)
         // Set those above attributes to message form and display
-        messageForm.showMessageForm(winMessage, buttonTitle: buttonTitle) { [weak self] () -> () in
-            if canMoveToNextLevel {
-                self?.nextLevel()
-            } else {
-                self?.showMainScene()
+        messageForm.applyStyle(messageStyle) { [weak self] (style: MessageStyle?) -> () in
+            if let myStyle = style {
+                switch myStyle {
+                case .NextLevel:
+                    self?.nextLevel()
+                case .GameOver, .Won:
+                    self?.showMainScene()
+                }
+
             }
-        }
-    }
-    
-    private func nextLevel() {
-        guard let currLevel = self.currentLevel else { return }
-        // Move to next level
-        let nextLevelNumber = currLevel.rawValue + 1
-        if let nextLevel = Level(levelNumber: nextLevelNumber) {
-            self.loadLevel(nextLevel)
-        }
-        // Hide MessageForm
-        if let messNode = self.messageNode {
-            messNode.hideMessageForm()
         }
     }
     

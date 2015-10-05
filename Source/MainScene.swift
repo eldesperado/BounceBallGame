@@ -5,13 +5,13 @@ class MainScene: CCNode {
     
     func didLoadFromCCB() {
         userInteractionEnabled = true
-        SoundHelper.sharedInstace.preloadSoundTracks()
+        SoundManager.sharedInstace.preloadSoundTracks()
     }
     
     override func onEnter() {
         super.onEnter()
         self.togglePlayButton(true)
-        SoundHelper.sharedInstace.playBGTrack(SoundTrack.Background)
+        SoundManager.sharedInstace.playBGTrack(SoundTrack.Background)
     }
     
     func play(){

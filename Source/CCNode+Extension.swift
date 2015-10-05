@@ -54,7 +54,7 @@ extension CCNode: ParticleEffectProtocol {
     
     // MARK: Effects
     
-    func showBlowupEffect(soundTrack: SoundTrack? = nil, removeFromParent: Bool? = false, completionAction:(()->())? = nil) {
+    func showBlowupEffect(soundTrack: SoundTrack? = SoundTrack.Boom, removeFromParent: Bool? = false, completionAction:(()->())? = nil) {
         guard let particle = self.createExplosionParticle() else { return }
         self.displayParticle(particle, soundTrack: soundTrack, removeFromParent: removeFromParent, completionAction: completionAction)
     }
@@ -70,7 +70,7 @@ extension CCNode: ParticleEffectProtocol {
         parentNode.addChild(particle)
         // Play Bounce sound
         if let track = soundTrack {
-            SoundHelper.sharedInstace.playEffectTrack(track)
+            SoundManager.sharedInstace.playEffectTrack(track)
         }
         if let removeAction = removeFromParent where removeAction == true {
             self.removeFromParent()

@@ -16,9 +16,9 @@ enum SoundTrack: String {
     }
 }
 
-class SoundHelper: NSObject {
-    static let sharedInstace = SoundHelper()
-    let soundManager = OALSimpleAudio.sharedInstance()
+class SoundManager: NSObject {
+    static let sharedInstace = SoundManager()
+    let simpleAudio = OALSimpleAudio.sharedInstance()
     
     func preloadSoundTracks() {
         OALSimpleAudio.sharedInstance().preloadBg(SoundTrack.Background.getFilePath())
@@ -30,12 +30,12 @@ class SoundHelper: NSObject {
     }
     
     func playBGTrack(track: SoundTrack, volume: Float = 0.8, pan: Float = 0, loop: Bool = true) {
-        self.soundManager.playBg(track.getFilePath(), volume: volume, pan: pan, loop: loop)
+        self.simpleAudio.playBg(track.getFilePath(), volume: volume, pan: pan, loop: loop)
     }
     
     func playEffectTrack(track: SoundTrack, volume: Float = 1, pitch: Float = 1, pan: Float = 0, loop: Bool = false) {
         self.pauseBG()
-        self.soundManager.playEffect(track.getFilePath(), volume: volume, pitch: pitch, pan: pan, loop: loop)
+        self.simpleAudio.playEffect(track.getFilePath(), volume: volume, pitch: pitch, pan: pan, loop: loop)
 
         let isNeedToPauseBGSound = self.needToPauseBGSound(track)
         if isNeedToPauseBGSound && loop == false {
@@ -48,15 +48,15 @@ class SoundHelper: NSObject {
     }
     
     func stopBG() {
-        self.soundManager.stopBg()
+        self.simpleAudio.stopBg()
     }
     
     func pauseBG() {
-        self.soundManager.bgPaused = true
+        self.simpleAudio.bgPaused = true
     }
     
     func resumeBG() {
-        self.soundManager.bgPaused = false
+        self.simpleAudio.bgPaused = false
     }
 
     
@@ -66,11 +66,11 @@ class SoundHelper: NSObject {
     }
     
     func stopAllEffect() {
-        self.soundManager.stopAllEffects()
+        self.simpleAudio.stopAllEffects()
     }
     
     func stopEverything() {
-        self.soundManager.stopEverything()
+        self.simpleAudio.stopEverything()
     }
     
     // MARK: Helpers

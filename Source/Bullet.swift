@@ -80,7 +80,7 @@ class Bullet: CCSprite {
     
     // MARK: Overriden Touches
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
-        let location = self.getTouchLocationInParentNode(touch)
+        let location = NodeHelper.getTouchLocationInParentNode(self.parent, touch: touch)
         self.touchLocation = location
         self.touchTime = CACurrentMediaTime()
 
@@ -89,51 +89,50 @@ class Bullet: CCSprite {
     }
     
     override func touchMoved(touch: CCTouch!, withEvent event: CCTouchEvent!) {
-        guard let intialTouchLocation = self.touchLocation, myArrow = self.arrow else { return }
-        if let location = self.getTouchLocationInParentNode(touch) {
-            let swipe = ccp(location.x - intialTouchLocation.x, location.y - intialTouchLocation.y)
-            let reversedSwipe = -swipe
-            // Scale the arrow depended on how hard the swipe is
-            let maximumProportion = self.getMaximumProportion(swipe, self.maxVelocity)
-            myArrow.scaleY = maximumProportion
-            self.showArrow(reversedSwipe, position: self.position)
-        }
+        guard let intialTouchLocation = self.touchLocation, myArrow = self.arrow,
+            location = NodeHelper.getTouchLocationInParentNode(self.parent, touch: touch) else { return }
+        
+        let swipe = ccp(location.x - intialTouchLocation.x, location.y - intialTouchLocation.y)
+        
+        // Scale the arrow depended on how hard the swipe is
+        let maximumProportion = swipe.getMaximumProportion(self.maxVelocity)
+        myArrow.scaleY = maximumProportion
+        self.showArrow(-swipe, position: self.position)
         
     }
     
     override func touchEnded(touch: CCTouch!, withEvent event: CCTouchEvent!) {
-        guard let intialTouchLocation = self.touchLocation, bulletPhysicsBody = self.physicsBody else { return }
+        guard let intialTouchLocation = self.touchLocation, bulletPhysicsBody = self.physicsBody,
+            location = NodeHelper.getTouchLocationInParentNode(self.parent, touch: touch) else { return }
         
-        if let location = self.getTouchLocationInParentNode(touch) {
-            let TouchTimeThreshold: CFTimeInterval = 0.1
-            let TouchDistanceThreshold: CGFloat = 0.1
-
-            if CACurrentMediaTime() - touchTime > TouchTimeThreshold {
-                let swipe = ccp(location.x - intialTouchLocation.x, location.y - intialTouchLocation.y)
-                let swipeLength = sqrt(swipe.x * swipe.x + swipe.y * swipe.y)
+        let TouchTimeThreshold: CFTimeInterval = 0.1
+        let TouchDistanceThreshold: CGFloat = 0.1
+        
+        if CACurrentMediaTime() - touchTime > TouchTimeThreshold {
+            let swipe = ccp(location.x - intialTouchLocation.x, location.y - intialTouchLocation.y)
+            let swipeLength = sqrt(swipe.x * swipe.x + swipe.y * swipe.y)
+            
+            if swipeLength > TouchDistanceThreshold {
                 
-                if swipeLength > TouchDistanceThreshold {
-
-                    // Create the force
-                    let reversedSwipe = -swipe
-                    let force = ccpMult(reversedSwipe, self.forceConstant)
-                    // Apply the force created by the swipe
-                    bulletPhysicsBody.applyForce(force)
-
-                    // Save Fly time
-                    self.flyTime = CACurrentMediaTime()
-                    
-                    #if DEBUG
-                        print("Apply Force |-> Bullet: \(force)")
-                    #endif
-
-                    self.isTouched = true
-                }
+                // Create the force
+                let reversedSwipe = -swipe
+                let force = ccpMult(reversedSwipe, self.forceConstant)
+                // Apply the force created by the swipe
+                bulletPhysicsBody.applyForce(force)
+                
+                // Save Fly time
+                self.flyTime = CACurrentMediaTime()
+                
+                #if DEBUG
+                    print("Apply Force |-> Bullet: \(force)")
+                #endif
+                
+                self.isTouched = true
             }
-            // Hide arrow
-            if let myArrow = self.arrow {
-                myArrow.visible = false
-            }
+        }
+        // Hide arrow
+        if let myArrow = self.arrow {
+            myArrow.visible = false
         }
         
     }
@@ -162,12 +161,6 @@ class Bullet: CCSprite {
         self.addChild(myTail)
     }
     
-    private func getTouchLocationInParentNode(touch: CCTouch) -> CGPoint? {
-        guard let parentNode = self.parent else { return nil }
-        let location = touch.locationInNode(parentNode)
-        return location
-    }
-    
     private func showArrow(diffPoint: CGPoint, position: CGPoint) {
         guard let myArrow = self.arrow else { return }
         let angle = atan2f(Float(diffPoint.x), Float(diffPoint.y))
@@ -187,19 +180,11 @@ class Bullet: CCSprite {
         // Make the tail visible
         myTail.visible = true
         myTail.angle = self.movementAngle
-        #if DEBUG
-            
-        #endif
-
     }
     
     private func getBulletPositionInNodeSpace() -> CGPoint {
         let bulletPosition = self.physicsNode().convertToNodeSpace(self.position)
         return bulletPosition
-    }
-    
-    private func getMaximumProportion(pointA: CGPoint, _ pointB: CGPoint) -> Float {
-        return max(abs(Float(pointA.x / pointB.x)), abs(Float(pointA.y / pointB.y)))
     }
     
     private func actionWhenBulletSlowingDown() -> () {

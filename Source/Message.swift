@@ -8,36 +8,20 @@
 
 import UIKit
 
+typealias MessageButtonActionClosure = ((MessageStyle?) -> ())
+
 class Message: CCNode {
     weak var button: CCButton?
     weak var messageLabel: CCLabelTTF?
-    typealias ButtonActionClosure = () -> ()
-    var buttonActionClosure: ButtonActionClosure?
-    
+    var buttonActionClosure: MessageButtonActionClosure?
+    internal var style: MessageStyle?
     func didLoadFromCCB() {
         
     }
     
     func buttonDidTap() {
         if let actionClosure = self.buttonActionClosure {
-            actionClosure()
+            actionClosure(self.style)
         }
-    }
-    
-    func showMessageForm(message: String, buttonTitle: String, actionClosure: ButtonActionClosure? = nil) {
-        if let label = self.messageLabel {
-            label.string = message
-        }
-        if let btn = self.button {
-            btn.title = buttonTitle
-        }
-        if let _ = self.button, closure = actionClosure {
-            self.buttonActionClosure = closure
-        }
-        self.visible = true
-    }
-    
-    func hideMessageForm() {
-        self.visible = false
-    }
+    }    
 }

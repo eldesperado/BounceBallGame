@@ -39,4 +39,10 @@ struct NodeHelper {
         }
         return angle
     }
+    
+    static func getTouchLocationInParentNode(parentNode: CCNode?, touch: CCTouch) -> CGPoint? {
+        guard let parentNode = parentNode else { return nil }
+        let location = touch.locationInNode(parentNode)
+        return location
+    }
 }
