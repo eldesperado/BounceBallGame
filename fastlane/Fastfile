@@ -1,0 +1,160 @@
+# Customise this file, documentation can be found here:
+# https://github.com/KrauseFx/fastlane/tree/master/docs
+# All available actions: https://github.com/KrauseFx/fastlane/blob/master/docs/Actions.md
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# By default, fastlane will send which actions are used
+# No personal data is shared, more information on https://github.com/fastlane/enhancer
+# Uncomment the following line to opt out
+# opt_out_usage
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "1.26.0"
+
+default_platform :ios
+
+
+platform :ios do
+  before_all do
+    # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
+    
+    increment_build_number
+
+    # xctool # run the tests of your app
+  end
+
+desc "Responsible for building and signing the app"
+  private_lane :build_app do |options|
+    # Download the provisioning profile for the app
+    sigh(output_path: "./fastlane/profiles") # Distribution Profile
+
+    # Download the provisioning profile
+    sigh(
+      output_path: "./fastlane/profiles"
+    )
+
+    increment_build_number # version bump
+
+    gym(
+      	scheme: "Pinball",
+        clean: true,
+        export_method: 'ad-hoc',
+        use_legacy_build_api: true,
+        output_directory: './build'
+    )
+  end
+
+desc "Runs the tests of the iOS App"
+  lane :test do
+    xctest(
+      workspace: './Pinball.xcworkspace',
+      scheme: 'Debug',
+      sdk: 'iphonesimulator',
+      destination: "name=iPhone 6"
+    )
+  end
+
+desc "Fix Provisioning Profile issues"
+  lane :fixprovision do
+    # snapshot
+    cert
+    sigh
+  end
+
+  desc "Build a Adhoc IPA"
+  lane :adhoc do
+  	gym(
+  		scheme: "Pinball",
+        clean: true,
+        export_method: 'ad-hoc',
+        use_legacy_build_api: true,
+        output_directory: './build'
+   )
+  end
+
+  desc "Build and upload a new build to Apple TestFlight"
+  desc "This action will also do a build version bump and push it to git."
+  desc "This will **not** send an email to all testers, it will only be uploaded to the new TestFlight."
+  lane :beta do
+    build_app
+
+    deliver(
+      skip_deploy: true,
+      beta: true
+    )
+
+    commit_version_bump(
+      message: 'Build Version Bump by fastlane',
+      force: true
+    )
+
+    build_number = Actions.lane_context[Actions::SharedValues::BUILD_NUMBER]
+    add_git_tag(tag: "testflight-#{build_number}")
+
+    push_to_git_remote
+  end
+
+  desc "Submit a new version to the App Store"
+  desc "This will do the following: "
+  desc "- Make sure the profiles are up to date and download the latest one"
+  desc "- Do a build version bump and push it"
+  desc "- Create new screenshots and store them in `./fastlane/screenshots`"
+  desc "- Collect the app metadata from `./fastlane/metadata`"
+  desc "- Upload screenshots + app metadata"
+  desc "- Build, sign and upload the app"
+  desc "This will **not** submit the app for review."
+  lane :appstore do
+    snapshot
+
+    build_app
+
+    deliver(
+      skip_deploy: true, 
+      force: true
+    )
+
+    commit_version_bump(
+      message: 'Version Bump by fastlane',
+      force: true
+    )
+
+    build_number = Actions.lane_context[Actions::SharedValues::BUILD_NUMBER]
+    add_git_tag(tag: "appstore-#{build_number}")
+
+    push_to_git_remote
+  end
+
+  desc "Creates a new push certificate, ready to be uploaded to parse"
+  lane :push do
+    pem(generate_p12: true)
+    puts "------------------ Please upload the .p12 file to parse.com ------------------ ".yellow
+  end
+
+  # You can define as many lanes as you want
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+ 
+    # slack(
+    #   message: "Successfully deployed new App Update."
+    # )
+  end
+
+  error do |lane, exception|
+    # slack(
+    #   message: exception.message,
+    #   success: false
+    # )
+  end
+end
+
+
+# More information about multiple platforms in fastlane: 
+# https://github.com/KrauseFx/fastlane/blob/master/docs/Platforms.md

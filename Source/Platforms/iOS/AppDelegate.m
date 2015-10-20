@@ -27,6 +27,9 @@
 
 #import "AppDelegate.h"
 #import "CCBuilderReader.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+
 
 @implementation AppController
 
@@ -53,6 +56,9 @@
     //[cocos2dSetup setObject:kEAGLColorFormatRGB565 forKey:CCConfigPixelFormat];
     
     [self setupCocos2dWithOptions:cocos2dSetup];
+    
+    [Fabric with:@[[Crashlytics class]]];
+
     
     return YES;
 }
