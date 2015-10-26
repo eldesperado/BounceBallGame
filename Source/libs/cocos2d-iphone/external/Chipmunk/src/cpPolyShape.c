@@ -20,7 +20,7 @@
  */
 
 #include "chipmunk/chipmunk_private.h"
-#include "chipmunk_unsafe.h"
+#include "chipmunk/chipmunk_unsafe.h"
 
 cpPolyShape *
 cpPolyShapeAlloc(void)
@@ -77,7 +77,7 @@ cpPolyShapePointQuery(cpPolyShape *poly, cpVect p, cpPointQueryInfo *info){
 	
 	for(int i=0; i<count; i++){
 		cpVect v1 = planes[i].v0;
-		if(cpvdot(planes[i].n, cpvsub(p, v1)) > 0.0f) outside = cpTrue;
+		outside = outside || (cpvdot(planes[i].n, cpvsub(p,v1)) > 0.0f);
 		
 		cpVect closest = cpClosetPointOnSegment(p, v0, v1);
 		
@@ -213,6 +213,12 @@ cpShape *
 cpPolyShapeNew(cpBody *body, int count, const cpVect *verts, cpTransform transform, cpFloat radius)
 {
 	return (cpShape *)cpPolyShapeInit(cpPolyShapeAlloc(), body, count, verts, transform, radius);
+}
+
+cpShape *
+cpPolyShapeNewRaw(cpBody *body, int count, const cpVect *verts, cpFloat radius)
+{
+	return (cpShape *)cpPolyShapeInitRaw(cpPolyShapeAlloc(), body, count, verts, radius);
 }
 
 cpPolyShape *

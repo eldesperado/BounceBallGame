@@ -57,6 +57,7 @@
     
     [self setupCocos2dWithOptions:cocos2dSetup];
     
+    
     [Fabric with:@[[Crashlytics class]]];
 
     

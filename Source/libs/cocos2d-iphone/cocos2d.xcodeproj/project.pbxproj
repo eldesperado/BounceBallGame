@@ -27,6 +27,7 @@
 		1435EB831A37BA7000BD04D4 /* GLActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1435EB821A37BA7000BD04D4 /* GLActivityKit.framework */; };
 		14C4C33E1A37E39E00DD3957 /* AndroidKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C4C33D1A37E39E00DD3957 /* AndroidKit.framework */; };
 		14EF47AA1A37F11C00A45BE4 /* JavaKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14EF47A91A37F11C00A45BE4 /* JavaKit.framework */; };
+		25F15F7E1BDE1E7300FEB17A /* libObjectiveChipmunk-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25F15F681BDE1D7900FEB17A /* libObjectiveChipmunk-iOS.a */; };
 		2B192835163361B10049A044 /* CCClippingNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B192833163361B10049A044 /* CCClippingNode.h */; };
 		2B192836163361B10049A044 /* CCClippingNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B192834163361B10049A044 /* CCClippingNode.m */; };
 		462D9B7F1A427E130040C5F2 /* JavaFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 462D9B7E1A427E130040C5F2 /* JavaFoundation.framework */; };
@@ -434,10 +435,8 @@
 		7A5948D119E375BE00F65F90 /* CCTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E260D718171D2000A0E872 /* CCTextField.m */; };
 		7A5948D319E375BE00F65F90 /* CCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = B7EE6A1D181AE34600B983FE /* CCSlider.m */; };
 		7A59493E19E3803200F65F90 /* CCEffectBlur.h in Headers */ = {isa = PBXBuildFile; fileRef = D3903B081995285B003AA81A /* CCEffectBlur.h */; };
-		7A59493F19E380D700F65F90 /* libObjectiveChipmunk-Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A59492C19E379B600F65F90 /* libObjectiveChipmunk-Mac.a */; };
 		7A59494019E3810500F65F90 /* CCPlatformTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 571CD01F19649E03003D460C /* CCPlatformTextField.m */; };
 		7A59498319E38C9800F65F90 /* libSSZipArchiveMac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A59498219E38C8300F65F90 /* libSSZipArchiveMac.a */; };
-		7A97912A19E646D8001FFC4D /* libObjectiveChipmunk-Android.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A40377B19E36EFF007B6E8F /* libObjectiveChipmunk-Android.a */; };
 		7A97912B19E646F9001FFC4D /* libSSZipArchiveAndroid.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A40378319E36EFF007B6E8F /* libSSZipArchiveAndroid.a */; };
 		83409E4919D5BADC004B7EB9 /* libSSZipArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83409E3619D5B791004B7EB9 /* libSSZipArchive.a */; };
 		839CE58619FFB139003369F0 /* CCEffectInvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 839CE58419FFB139003369F0 /* CCEffectInvert.h */; };
@@ -531,7 +530,6 @@
 		B706B19818209A8300B27A2C /* CCTexture_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B706B19718209A8300B27A2C /* CCTexture_Private.h */; };
 		B74C2B9B17BDA63A00A829C0 /* CCSprite9Slice.h in Headers */ = {isa = PBXBuildFile; fileRef = B74C2B9917BDA63A00A829C0 /* CCSprite9Slice.h */; };
 		B74C2B9C17BDA63A00A829C0 /* CCSprite9Slice.m in Sources */ = {isa = PBXBuildFile; fileRef = B74C2B9A17BDA63A00A829C0 /* CCSprite9Slice.m */; };
-		B759E5381880C91200E8166C /* libObjectiveChipmunk-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B759E52D1880C66900E8166C /* libObjectiveChipmunk-iPhone.a */; };
 		B75C2E7C17C5908B002B0E0D /* NSAttributedString+CCAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = B75C2E7A17C5908B002B0E0D /* NSAttributedString+CCAdditions.h */; };
 		B75C2E7D17C5908B002B0E0D /* NSAttributedString+CCAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B75C2E7B17C5908B002B0E0D /* NSAttributedString+CCAdditions.m */; };
 		B77060CF18341AD50043CC67 /* CCBReader_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B77060CE18341AD50043CC67 /* CCBReader_Private.h */; };
@@ -961,7 +959,7 @@
 		D38058211889CE7700822437 /* CCCache.m in Sources */ = {isa = PBXBuildFile; fileRef = D380581F1889CE7700822437 /* CCCache.m */; };
 		D3903B0A1995285B003AA81A /* CCEffectBlur.h in Headers */ = {isa = PBXBuildFile; fileRef = D3903B081995285B003AA81A /* CCEffectBlur.h */; };
 		D3903B0B1995285B003AA81A /* CCEffectBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = D3903B091995285B003AA81A /* CCEffectBlur.m */; };
-		D3903B0D1995288D003AA81A /* CCNoARC.m in Sources */ = {isa = PBXBuildFile; fileRef = D3903B0C1995288D003AA81A /* CCNoARC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		D3903B0D1995288D003AA81A /* CCNoARC.m in Sources */ = {isa = PBXBuildFile; fileRef = D3903B0C1995288D003AA81A /* CCNoARC.m */; };
 		D3903B10199528A0003AA81A /* CCRenderDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = D3903B0E199528A0003AA81A /* CCRenderDispatch.h */; };
 		D3903B11199528A0003AA81A /* CCRenderDispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = D3903B0F199528A0003AA81A /* CCRenderDispatch.m */; };
 		D3903B14199528B6003AA81A /* CCMetalView.h in Headers */ = {isa = PBXBuildFile; fileRef = D3903B12199528B6003AA81A /* CCMetalView.h */; };
@@ -1006,12 +1004,61 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7A40377A19E36EFF007B6E8F /* PBXContainerItemProxy */ = {
+		25F15F5D1BDE1D7900FEB17A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 7A40369519DE39C8007B6E8F;
-			remoteInfo = "ObjectiveChipmunk-iPhoneAndroid";
+			remoteGlobalIDString = D3E5F0490AA32FDE004E361B;
+			remoteInfo = ChipmunkDemo;
+		};
+		25F15F5F1BDE1D7900FEB17A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D34963BB0B56CAA300CAD239;
+			remoteInfo = "Chipmunk-Mac";
+		};
+		25F15F611BDE1D7900FEB17A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D3C3787A11063B1B003EF1D9;
+			remoteInfo = "Chipmunk-iOS";
+		};
+		25F15F631BDE1D7900FEB17A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D39ECD8617ED70D900319DBA;
+			remoteInfo = "Benchmark iPhone";
+		};
+		25F15F651BDE1D7900FEB17A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D333C5F018639A0500BBC4FF;
+			remoteInfo = "ObjectiveChipmunk-Mac";
+		};
+		25F15F671BDE1D7900FEB17A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D309B21317EFE2EF00AA52C8;
+			remoteInfo = "ObjectiveChipmunk-iOS";
+		};
+		25F15F691BDE1D7900FEB17A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D309B22017EFE2EF00AA52C8;
+			remoteInfo = ObjectiveChipmunkTests;
+		};
+		25F15F7F1BDE1E7800FEB17A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D309B21217EFE2EF00AA52C8;
+			remoteInfo = "ObjectiveChipmunk-iOS";
 		};
 		7A40378219E36EFF007B6E8F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1019,20 +1066,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 7A4036DE19DE3DF6007B6E8F;
 			remoteInfo = SSZipArchiveAndroid;
-		};
-		7A59492819E379B600F65F90 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7A5948D719E3795700F65F90;
-			remoteInfo = "ObjectiveChipmunk-Mac";
-		};
-		7A59492B19E379B600F65F90 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7A5948D819E3795700F65F90;
-			remoteInfo = "ObjectiveChipmunk-Mac";
 		};
 		7A59492D19E37A2300F65F90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1062,13 +1095,6 @@
 			remoteGlobalIDString = 7A4036C319DE3DF6007B6E8F;
 			remoteInfo = SSZipArchiveAndroid;
 		};
-		7A9790D219E61DFE001FFC4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7A40366D19DE39C8007B6E8F;
-			remoteInfo = "ObjectiveChipmunk-Android";
-		};
 		83409E3119D5B791004B7EB9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83409E2A19D5B791004B7EB9 /* SSZipArchive.xcodeproj */;
@@ -1089,20 +1115,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 83409DCD19D5B65B004B7EB9;
 			remoteInfo = SSZipArchive;
-		};
-		B759E52C1880C66900E8166C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D309B21317EFE2EF00AA52C8;
-			remoteInfo = "ObjectiveChipmunk-iPhone";
-		};
-		B759E5311880C70A00E8166C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D309B21217EFE2EF00AA52C8;
-			remoteInfo = "ObjectiveChipmunk-iPhone";
 		};
 		B7E7DE4D1A76DB8B004234B7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1157,6 +1169,7 @@
 		14EF47A91A37F11C00A45BE4 /* JavaKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaKit.framework; path = "../../Library/Application Support/Developer/Shared/Xcode/Platforms/Android.platform/Developer/SDKs/SBAndroid.sdk/System/Library/Frameworks/JavaKit.framework"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Chipmunk7.xcodeproj; path = external/Chipmunk/xcode/Chipmunk7.xcodeproj; sourceTree = "<group>"; };
 		2B192833163361B10049A044 /* CCClippingNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCClippingNode.h; sourceTree = "<group>"; };
 		2B192834163361B10049A044 /* CCClippingNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCClippingNode.m; sourceTree = "<group>"; };
 		462D9B7E1A427E130040C5F2 /* JavaFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaFoundation.framework; path = "../../Library/Application Support/Developer/Shared/Xcode/Platforms/Android.platform/Developer/SDKs/SBAndroid.sdk/System/Library/Frameworks/JavaFoundation.framework"; sourceTree = "<group>"; };
@@ -1341,7 +1354,6 @@
 		B74C2B9917BDA63A00A829C0 /* CCSprite9Slice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSprite9Slice.h; sourceTree = "<group>"; };
 		B74C2B9A17BDA63A00A829C0 /* CCSprite9Slice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSprite9Slice.m; sourceTree = "<group>"; };
 		B750162218124B6000708A2F /* CCControlSubclass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CCControlSubclass.h; path = "cocos2d-ui/CCControlSubclass.h"; sourceTree = "<group>"; };
-		B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "Chipmunk7-ios.xcodeproj"; sourceTree = "<group>"; };
 		B75C2E7A17C5908B002B0E0D /* NSAttributedString+CCAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+CCAdditions.h"; sourceTree = "<group>"; };
 		B75C2E7B17C5908B002B0E0D /* NSAttributedString+CCAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+CCAdditions.m"; sourceTree = "<group>"; };
 		B77060CE18341AD50043CC67 /* CCBReader_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCBReader_Private.h; path = "cocos2d-ui/CCBReader/CCBReader_Private.h"; sourceTree = "<group>"; };
@@ -1545,6 +1557,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25F15F7E1BDE1E7300FEB17A /* libObjectiveChipmunk-iOS.a in Frameworks */,
 				83409E4919D5BADC004B7EB9 /* libSSZipArchive.a in Frameworks */,
 				FC64014019C79716003E595A /* libObjectAL.a in Frameworks */,
 				D3903B1A19952ABD003AA81A /* Metal.framework in Frameworks */,
@@ -1553,7 +1566,6 @@
 				D28A2E1D1954F7E000ADC03D /* OpenGLES.framework in Frameworks */,
 				D28A2E1B1954F68D00ADC03D /* QuartzCore.framework in Frameworks */,
 				D28A2E161954F66E00ADC03D /* UIKit.framework in Frameworks */,
-				B759E5381880C91200E8166C /* libObjectiveChipmunk-iPhone.a in Frameworks */,
 				D395DB2C183D73A70024997E /* AudioToolbox.framework in Frameworks */,
 				D395DB2B183D739E0024997E /* OpenAL.framework in Frameworks */,
 				A06D9C141728D5F600704732 /* CoreText.framework in Frameworks */,
@@ -1568,7 +1580,6 @@
 			files = (
 				B77582CE1A76CDB200C8589F /* libz.dylib in Frameworks */,
 				7A59498319E38C9800F65F90 /* libSSZipArchiveMac.a in Frameworks */,
-				7A59493F19E380D700F65F90 /* libObjectiveChipmunk-Mac.a in Frameworks */,
 				7A4037C819E3712A007B6E8F /* OpenGL.framework in Frameworks */,
 				7A4037C619E37126007B6E8F /* QuartzCore.framework in Frameworks */,
 				7A4037C419E3711D007B6E8F /* ApplicationServices.framework in Frameworks */,
@@ -1599,7 +1610,6 @@
 				14C4C33E1A37E39E00DD3957 /* AndroidKit.framework in Frameworks */,
 				1435EB831A37BA7000BD04D4 /* GLActivityKit.framework in Frameworks */,
 				7A97912B19E646F9001FFC4D /* libSSZipArchiveAndroid.a in Frameworks */,
-				7A97912A19E646D8001FFC4D /* libObjectiveChipmunk-Android.a in Frameworks */,
 				FC39962219C3BBCF00C93E5E /* libObjectAL (Android).a in Frameworks */,
 				D2FEB745194F6C9E00FC0574 /* CoreText.framework in Frameworks */,
 				D2FEB747194F6C9E00FC0574 /* Foundation.framework in Frameworks */,
@@ -1617,6 +1627,20 @@
 				D2FEB74F194F6C9E00FC0574 /* libcocos2dAndroid.a */,
 				7A4037A819E37038007B6E8F /* libcocos2d-mac.a */,
 				B7E7DE341A76DB7D004234B7 /* cocos2dMacFramework.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		25F15F541BDE1D7800FEB17A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				25F15F5E1BDE1D7900FEB17A /* ChipmunkDemo.app */,
+				25F15F601BDE1D7900FEB17A /* libChipmunk-Mac.a */,
+				25F15F621BDE1D7900FEB17A /* libChipmunk-iOS.a */,
+				25F15F641BDE1D7900FEB17A /* Benchmark iPhone.app */,
+				25F15F661BDE1D7900FEB17A /* libObjectiveChipmunk-Mac.a */,
+				25F15F681BDE1D7900FEB17A /* libObjectiveChipmunk-iOS.a */,
+				25F15F6A1BDE1D7900FEB17A /* ObjectiveChipmunkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1688,9 +1712,9 @@
 		501756090F335CE900624901 /* external */ = {
 			isa = PBXGroup;
 			children = (
+				25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */,
 				83409E2A19D5B791004B7EB9 /* SSZipArchive.xcodeproj */,
 				FC39961319C3B92F00C93E5E /* ObjectAL.xcodeproj */,
-				B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */,
 			);
 			name = external;
 			sourceTree = "<group>";
@@ -2100,16 +2124,6 @@
 				D26A0429194B815500503BEC /* CCTouchEvent.m */,
 			);
 			name = "Touch & Mouse Handling";
-			sourceTree = "<group>";
-		};
-		B759E5291880C66900E8166C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B759E52D1880C66900E8166C /* libObjectiveChipmunk-iPhone.a */,
-				7A40377B19E36EFF007B6E8F /* libObjectiveChipmunk-Android.a */,
-				7A59492C19E379B600F65F90 /* libObjectiveChipmunk-Mac.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		B78AE45917E7AF010028BE0B /* cocos2d-ui */ = {
@@ -2975,9 +2989,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				25F15F801BDE1E7800FEB17A /* PBXTargetDependency */,
 				83409E4D19D5E8A1004B7EB9 /* PBXTargetDependency */,
 				FCFDA23E19C78E2D00B90910 /* PBXTargetDependency */,
-				B759E5321880C70A00E8166C /* PBXTargetDependency */,
 			);
 			name = "cocos2d-ios";
 			productName = cocos2d;
@@ -2997,7 +3011,6 @@
 			dependencies = (
 				7A59497F19E38C8300F65F90 /* PBXTargetDependency */,
 				7A59492E19E37A2300F65F90 /* PBXTargetDependency */,
-				7A59492919E379B600F65F90 /* PBXTargetDependency */,
 			);
 			name = "cocos2d-mac";
 			productName = "cocos2d-mac";
@@ -3034,7 +3047,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				7A9790D319E61DFE001FFC4D /* PBXTargetDependency */,
 				7A9790D119E61DDB001FFC4D /* PBXTargetDependency */,
 				FC39962119C3BB3A00C93E5E /* PBXTargetDependency */,
 			);
@@ -3075,8 +3087,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = B759E5291880C66900E8166C /* Products */;
-					ProjectRef = B759E5281880C66900E8166C /* Chipmunk7-ios.xcodeproj */;
+					ProductGroup = 25F15F541BDE1D7800FEB17A /* Products */;
+					ProjectRef = 25F15F531BDE1D7800FEB17A /* Chipmunk7.xcodeproj */;
 				},
 				{
 					ProductGroup = FC39961419C3B92F00C93E5E /* Products */;
@@ -3099,11 +3111,53 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		7A40377B19E36EFF007B6E8F /* libObjectiveChipmunk-Android.a */ = {
+		25F15F5E1BDE1D7900FEB17A /* ChipmunkDemo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ChipmunkDemo.app;
+			remoteRef = 25F15F5D1BDE1D7900FEB17A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25F15F601BDE1D7900FEB17A /* libChipmunk-Mac.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libObjectiveChipmunk-Android.a";
-			remoteRef = 7A40377A19E36EFF007B6E8F /* PBXContainerItemProxy */;
+			path = "libChipmunk-Mac.a";
+			remoteRef = 25F15F5F1BDE1D7900FEB17A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25F15F621BDE1D7900FEB17A /* libChipmunk-iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libChipmunk-iOS.a";
+			remoteRef = 25F15F611BDE1D7900FEB17A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25F15F641BDE1D7900FEB17A /* Benchmark iPhone.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Benchmark iPhone.app";
+			remoteRef = 25F15F631BDE1D7900FEB17A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25F15F661BDE1D7900FEB17A /* libObjectiveChipmunk-Mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libObjectiveChipmunk-Mac.a";
+			remoteRef = 25F15F651BDE1D7900FEB17A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25F15F681BDE1D7900FEB17A /* libObjectiveChipmunk-iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libObjectiveChipmunk-iOS.a";
+			remoteRef = 25F15F671BDE1D7900FEB17A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25F15F6A1BDE1D7900FEB17A /* ObjectiveChipmunkTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ObjectiveChipmunkTests.xctest;
+			remoteRef = 25F15F691BDE1D7900FEB17A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		7A40378319E36EFF007B6E8F /* libSSZipArchiveAndroid.a */ = {
@@ -3111,13 +3165,6 @@
 			fileType = archive.ar;
 			path = libSSZipArchiveAndroid.a;
 			remoteRef = 7A40378219E36EFF007B6E8F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		7A59492C19E379B600F65F90 /* libObjectiveChipmunk-Mac.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libObjectiveChipmunk-Mac.a";
-			remoteRef = 7A59492B19E379B600F65F90 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		7A59498219E38C8300F65F90 /* libSSZipArchiveMac.a */ = {
@@ -3139,13 +3186,6 @@
 			fileType = archive.ar;
 			path = libSSZipArchive.a;
 			remoteRef = 83409E3519D5B791004B7EB9 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		B759E52D1880C66900E8166C /* libObjectiveChipmunk-iPhone.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libObjectiveChipmunk-iPhone.a";
-			remoteRef = B759E52C1880C66900E8166C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		D28B2E7E19CBA89A00DC6E08 /* libObjectAL (Mac).a */ = {
@@ -3645,10 +3685,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7A59492919E379B600F65F90 /* PBXTargetDependency */ = {
+		25F15F801BDE1E7800FEB17A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "ObjectiveChipmunk-Mac";
-			targetProxy = 7A59492819E379B600F65F90 /* PBXContainerItemProxy */;
+			name = "ObjectiveChipmunk-iOS";
+			targetProxy = 25F15F7F1BDE1E7800FEB17A /* PBXContainerItemProxy */;
 		};
 		7A59492E19E37A2300F65F90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3665,20 +3705,10 @@
 			name = SSZipArchiveAndroid;
 			targetProxy = 7A9790D019E61DDB001FFC4D /* PBXContainerItemProxy */;
 		};
-		7A9790D319E61DFE001FFC4D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "ObjectiveChipmunk-Android";
-			targetProxy = 7A9790D219E61DFE001FFC4D /* PBXContainerItemProxy */;
-		};
 		83409E4D19D5E8A1004B7EB9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SSZipArchive;
 			targetProxy = 83409E4C19D5E8A1004B7EB9 /* PBXContainerItemProxy */;
-		};
-		B759E5321880C70A00E8166C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "ObjectiveChipmunk-iPhone";
-			targetProxy = B759E5311880C70A00E8166C /* PBXContainerItemProxy */;
 		};
 		B7E7DE4E1A76DB8B004234B7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3982,7 +4012,7 @@
 					"external/ObjectAL/**",
 					"external/SSZipArchive/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
@@ -4036,7 +4066,7 @@
 					"external/ObjectAL/**",
 					"external/SSZipArchive/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";

@@ -648,7 +648,7 @@
 					<key>allowsRotation</key>
 					<true/>
 					<key>bodyShape</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>collisionCategories</key>
 					<array/>
 					<key>collisionMask</key>
@@ -656,7 +656,7 @@
 					<key>collisionType</key>
 					<string></string>
 					<key>cornerRadius</key>
-					<real>0.0</real>
+					<real>20.5</real>
 					<key>density</key>
 					<real>1</real>
 					<key>dynamic</key>
@@ -668,69 +668,12 @@
 					<key>points</key>
 					<array>
 						<array>
-							<real>19.713376998901367</real>
-							<real>8.6525297164916992</real>
-						</array>
-						<array>
-							<real>4.0353775024414062</real>
-							<real>26.290279388427734</real>
-						</array>
-						<array>
-							<real>22.65300178527832</real>
-							<real>53.726779937744141</real>
-						</array>
-						<array>
-							<real>54.988876342773438</real>
-							<real>36.089031219482422</real>
-						</array>
-						<array>
-							<real>41.270626068115234</real>
-							<real>7.6726546287536621</real>
-						</array>
-						<array>
-							<real>27.552377700805664</real>
-							<real>38.048778533935547</real>
+							<real>29.5</real>
+							<real>28</real>
 						</array>
 					</array>
 					<key>polygons</key>
-					<array>
-						<array>
-							<array>
-								<real>22.65300178527832</real>
-								<real>53.726779937744141</real>
-							</array>
-							<array>
-								<real>4.0353775024414062</real>
-								<real>26.290279388427734</real>
-							</array>
-							<array>
-								<real>19.713376998901367</real>
-								<real>8.6525297164916992</real>
-							</array>
-							<array>
-								<real>27.552377700805664</real>
-								<real>38.048778533935547</real>
-							</array>
-						</array>
-						<array>
-							<array>
-								<real>27.552377700805664</real>
-								<real>38.048778533935547</real>
-							</array>
-							<array>
-								<real>41.270626068115234</real>
-								<real>7.6726546287536621</real>
-							</array>
-							<array>
-								<real>54.988876342773438</real>
-								<real>36.089031219482422</real>
-							</array>
-							<array>
-								<real>22.65300178527832</real>
-								<real>53.726779937744141</real>
-							</array>
-						</array>
-					</array>
+					<array/>
 				</dict>
 				<key>properties</key>
 				<array>
@@ -824,6 +767,8 @@
 						<array/>
 					</dict>
 				</array>
+				<key>selected</key>
+				<true/>
 			</dict>
 			<dict>
 				<key>UUID</key>
@@ -1049,8 +994,6 @@
 						<array/>
 					</dict>
 				</array>
-				<key>selected</key>
-				<true/>
 			</dict>
 			<dict>
 				<key>UUID</key>

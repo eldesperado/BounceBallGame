@@ -66,22 +66,25 @@ extension CCNode: ParticleEffectProtocol {
     
     private func displayParticle(particle: CCParticleSystem, soundTrack: SoundTrack? = SoundTrack.Boom, removeFromParent: Bool? = false, completionAction:(()->())? = nil) {
         guard let parentNode = self.parent else { return }
-        particle.position = self.position
-        parentNode.addChild(particle)
-        // Play Bounce sound
-        if let track = soundTrack {
-            SoundManager.sharedInstace.playEffectTrack(track)
-        }
-        if let removeAction = removeFromParent where removeAction == true {
-            self.removeFromParent()
-        }
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            particle.position = self.position
+            parentNode.addChild(particle)
+            // Play Bounce sound
+            if let track = soundTrack {
+                SoundManager.sharedInstace.playEffectTrack(track)
+            }
+            if let removeAction = removeFromParent where removeAction == true {
+                self.removeFromParentAndCleanup(true)
+            }
+            
+            // Do completion Action if exists
+            if let action = completionAction {
+                let particleLifeTime = Double(ParticleHelper.getParticleLongestLife(particle))
+                delay(particleLifeTime, closure: { () -> () in
+                    action()
+                })
+            }
 
-        // Do completion Action if exists
-        if let action = completionAction {
-            let particleLifeTime = Double(ParticleHelper.getParticleLongestLife(particle))
-            delay(particleLifeTime, closure: { () -> () in
-                action()
-            })
-        }
+        })
     }
 }

@@ -111,13 +111,8 @@
 	#endif
 #endif
 
-#ifndef M_PI
-	#define M_PI 3.14159265358979323846264338327950288
-#endif
 
-#ifndef M_E
-	#define M_E 2.71828182845904523536028747135266250
-#endif
+#define CP_PI ((cpFloat)3.14159265358979323846264338327950288)
 
 
 /// Return the max of two cpFloats.
@@ -215,7 +210,7 @@ typedef uint32_t cpCollisionID;
 #endif
 
 #ifdef CP_BITMASK_TYPE
-	typedef CP_BITMASK_TYPE cpLayers;
+	typedef CP_BITMASK_TYPE cpBitmask;
 #else
 /// Type used for cpShapeFilter category and mask.
 	typedef unsigned int cpBitmask;

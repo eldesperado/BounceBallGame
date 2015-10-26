@@ -7,17 +7,20 @@
 //
 
 import Foundation
+import Fabric
+import Crashlytics
 
 class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     // MARK: GUI & Nodes
     weak var turnLabel: CCLabelTTF?
     weak var timeLabel: CCLabelTTF?
-    weak var levelNode: CCNode?
+    weak var gameLevelNode: CCNode?
     weak var gamePhysicsNode: CCPhysicsNode?
     weak var messageNode: Message?
     
+    weak var testLabel: CCLabelTTF?
+    
     // MARK: Objects
-    private var walls: [Wall]?
     weak var bullet: Bullet?
     weak var targetNode: CCNode?
     // MARK: Game Properties
@@ -25,10 +28,10 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     // MARK: Private Attributes
     private var initialBulletPosition: CGPoint?
+    private var timer: NSTimer?
     
     private var isPlayable = true {
         didSet {
-            self.userInteractionEnabled = self.isPlayable
             if let myBullet = self.bullet {
                 myBullet.userInteractionEnabled = self.isPlayable
             }
@@ -66,19 +69,30 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         // Setup Gameplay
         self.setup()
     }
-    
-    override init() {
-        super.init()
-        // Update GUI every minute
-        self.schedule("updateGUI:", interval: 1.0)
-    }
+
     
     override func onEnter() {
         super.onEnter()
+        timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "updateGUI:", userInfo: nil, repeats: true)
+    }
+    
+    override func onExit() {
+        super.onExit()
+        timer?.invalidate()
+        
+        if let currLevel = self.currentLevel, rTurns = self.remainingTurns {
+            Answers.logLevelEnd(currLevel.getLevelName(),
+                score: rTurns,
+                success: true,
+                customAttributes: [:])
+        }
     }
     
     // MARK: Public Methods
     func loadLevel(targetLevel: Level) {
+        Answers.logLevelStart(targetLevel.getLevelName(),
+            customAttributes: [:])
+        
         // Update Current Level
         self.currentLevel = targetLevel
         
@@ -107,7 +121,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     }
     
     // MARK: Game loop update
-    internal func updateGUI(delta: CCTimer) {
+    func updateGUI(delta: CCTimer) {
         if self.isPlayable {
             // Decrease the remaining time
             self.updateRemainingTimer()
@@ -115,45 +129,31 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     }
     
     // MARK: Gameplay
-    internal func nextAttemp() {
-        guard let myBullet = self.bullet, initialPosition = self.initialBulletPosition else { return }
-        
-        // Stop this bullet from moving
-        myBullet.stopMovement()
-        myBullet.visible = false
-        // Display Disappear Particle
-        myBullet.showDisappearEffect(removeFromParent: false) { () -> () in
-            // Reset Bullet
-            myBullet.reset()
-            // Return the bullet to the initial position
-            myBullet.position = initialPosition
-            
-            // Decrease the remaining turn by 1
-            if var rTurns = self.remainingTurns {
-                rTurns--
-            }
-            myBullet.visible = true
-
-        }
+    func nextAttemp() {
+        bulletBackToInitialPosition()
     }
     
     internal func gameOver() {
         // Prevent this game from playing
         self.isPlayable = false
-      // Stop the bullet moving
-      bullet?.stopMovement()
+        // Stop the bullet moving
+        bullet?.stopMovement()
         // Show Game Over message form
         self.showGameOverMessageForm()
         SoundManager.sharedInstace.playEffectTrack(SoundTrack.GameOver, loop: false)
+        
+        logAnswerEvent("Game Over")
     }
     
     internal func wonLevel() {
         // Prevent this game from playing
         self.isPlayable = false
-      // Stop the bullet moving
-      bullet?.stopMovement()
+        // Stop the bullet moving
+        bullet?.stopMovement()
         self.showWinMessageForm()
         SoundManager.sharedInstace.playEffectTrack(SoundTrack.Won, loop: false)
+        
+        logAnswerEvent("Won Level")
     }
     
     internal func nextLevel() {
@@ -167,6 +167,8 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         if let messNode = self.messageNode {
             messNode.hideMessageForm()
         }
+        
+        logAnswerEvent("Next Level")
     }
     
     // MARK: Collision Handle
@@ -177,14 +179,15 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         // Ignore all collision whose energy is below 0
         if energy > 5000 {
             // Add Post Step block to run code only once
-            gPhysicsNode.space.addPostStepBlock({ () -> Void in
-                if let aTargetNode = self.targetNode {
+            gPhysicsNode.space.addPostStepBlock({ [weak self] () -> Void in
+                if let aTargetNode = self?.targetNode {
                   aTargetNode.showBlowupEffect(SoundTrack.Boom, removeFromParent: true, completionAction: { [weak self] () -> () in
                         self?.wonLevel()
                         })
                 }
                 
-                aBullet.showDisappearEffect(removeFromParent: true)
+                self?.bulletBackToInitialPosition(true)
+                
                 }, key: aTarget)
         }
         
@@ -235,12 +238,9 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
     
     // MARK: Initialize Nodes
     private func initializeNodes(levelNode: CCNode) {
-        // Update array of wall containing in level node
-        // Get Walls
-        self.walls = NodeHelper.findChildrenOfClass(Wall.self, forNode: levelNode) as? [Wall]
         // Get Bullet
-        if let bullets = NodeHelper.findChildrenOfClass(Bullet.self, forNode: levelNode) as? [Bullet] where bullets.count > 0 {
-            self.bullet = bullets.first
+        if let gameLevelNode = gameLevelNode {
+            bullet = gameLevelNode.getChildByName("Bullet", recursively: true) as? Bullet
         }
         // Get Target Node
         if let targetNodes = NodeHelper.findChildrenOfClass(TargetNode.self, forNode: levelNode) as? [TargetNode] where targetNodes.count > 0 {
@@ -248,6 +248,7 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         }
         // Setup the bullet node
         self.setupBulletNode()
+
     }
     
     private func setupBulletNode() {
@@ -258,24 +259,23 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         bulletNode.actionAfterSwipe = { [weak self] in
             // Update the remaining turn, every time you swiped, decrease the remaining turns by 1
             // Track the movement of the bullet, as soon as the bullet stops moving, then updates the remaining turns
-            if let instance = self {
-                instance.updateRemainingTurn()
-                if instance.isPlayable {
-                    instance.nextAttemp()
-                }
+            
+            self?.updateRemainingTurn()
+            if let strongSelf = self where strongSelf.isPlayable {
+                strongSelf.nextAttemp()
             }
+
 
         }
     }
     
     private func addFirstChildForLevelNode(node: CCNode) {
-        guard let levelN = self.levelNode else { return }
-        let nodeName = "levelNode"
+        guard let gameLevelNode = gameLevelNode else { return }
         // Remove existed level node if had
-        if let existedNode = levelN.getChildByName(nodeName, recursively: true) {
-            levelN.removeChild(existedNode)
+        if let existedNode = gameLevelNode.getChildByName("gameLevelNode", recursively: true) {
+            gameLevelNode.removeChild(existedNode)
         }
-        levelN.addChild(node, z: 0, name: nodeName)
+        gameLevelNode.addChild(node, z: 0, name: "gameLevelNode")
         // Initialize Nodes
         self.initializeNodes(node)
     }
@@ -327,4 +327,34 @@ class Gameplay: CCNode, CCPhysicsCollisionDelegate {
         CCDirector.sharedDirector().presentScene(mainScene, withTransition: transition)
     }
     
+    // MARK: Helpers
+    private func logAnswerEvent(eventName: String) {
+        if let rTurns = remainingTurns, rTime = self.remainingTime {
+            Answers.logCustomEventWithName(eventName, customAttributes: ["Time": rTime, "Turns" : rTurns])
+        } else {
+            Answers.logCustomEventWithName(eventName, customAttributes: ["Time": -1, "Turns" : -1])
+        }
+    }
+    
+    
+    private func bulletBackToInitialPosition(removeFromParent: Bool = false) {
+        guard let bullet = bullet, initialBulletPosition = initialBulletPosition else { return }
+        
+        // Stop this bullet from moving
+        bullet.stopMovement()
+        
+        bullet.visible = false
+        // Display Disappear Particle
+        bullet.showDisappearEffect(removeFromParent: removeFromParent) { [weak self] () -> () in
+            // Reset Bullet
+            bullet.reset()
+            // Return the bullet to the initial position
+            bullet.position = initialBulletPosition
+            
+            bullet.visible = true
+            
+            self?.logAnswerEvent("Next Attemp")
+        }
+
+    }
 }

@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import Fabric
+import Crashlytics
+
 
 class Bullet: CCSprite {
     var actionAfterSwipe: (()->())?
@@ -34,7 +37,7 @@ class Bullet: CCSprite {
         self.userInteractionEnabled = true
         self.physicsBody.collisionType = CollisionType.Bullet.rawValue
         self.physicsBody.collisionGroup = CollisionType.Bullet.getCollisionGroup()
-        
+        self.name = "Bullet"
     }
     
     override func onEnter() {
@@ -72,11 +75,6 @@ class Bullet: CCSprite {
         }
     }
     
-    
-    func showDisappearEffect() {
-        let particle = self.createDisappearParticle()
-        self.addChild(particle)
-    }
     
     // MARK: Overriden Touches
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
@@ -144,21 +142,22 @@ class Bullet: CCSprite {
     // MARK: Private Methods
     
     private func setupArrow() {
-        guard let myArrow = self.arrow, parentNode = self.parent else { return }
+        guard let myArrow = self.arrow, parentNode = self.parent where parentNode.getChildByName("arrow", recursively: true) == nil else { return }
+        
         myArrow.visible = false
         let bulletPostion = self.getBulletPositionInNodeSpace()
         myArrow.position = bulletPostion
         myArrow.anchorPoint = CGPointMake(0.5, 0)
-        parentNode.addChild(myArrow)
+        parentNode.addChild(myArrow, z: 0, name: "arrow")
     }
     
     private func setupTail() {
-        guard let myTail = self.tail else { return }
+        guard let myTail = self.tail where self.getChildByName("tail", recursively: true) == nil  else { return }
         myTail.visible = false
         let frame = CGPointMake(self.contentSize.width / 2, self.contentSize.height / 2)
         myTail.rotation = self.rotation
         myTail.position = frame
-        self.addChild(myTail)
+        self.addChild(myTail, z: 0, name: "tail")
     }
     
     private func showArrow(diffPoint: CGPoint, position: CGPoint) {

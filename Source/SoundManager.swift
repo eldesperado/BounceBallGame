@@ -21,7 +21,6 @@ class SoundManager: NSObject {
     let simpleAudio = OALSimpleAudio.sharedInstance()
     
     func preloadSoundTracks() {
-        OALSimpleAudio.sharedInstance().preloadBg(SoundTrack.Background.getFilePath())
         OALSimpleAudio.sharedInstance().preloadEffect(SoundTrack.Bounce.getFilePath())
         OALSimpleAudio.sharedInstance().preloadEffect(SoundTrack.GameOver.getFilePath())
         OALSimpleAudio.sharedInstance().preloadEffect(SoundTrack.Won.getFilePath())

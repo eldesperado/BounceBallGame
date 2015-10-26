@@ -64,8 +64,10 @@ desc "Runs the tests of the iOS App"
 desc "Fix Provisioning Profile issues"
   lane :fixprovision do
     # snapshot
-    cert
-    sigh
+    sigh(
+      adhoc: true,
+      development: true
+    )
   end
 
   desc "Build a Adhoc IPA"
