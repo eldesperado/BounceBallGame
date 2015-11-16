@@ -43,3 +43,4 @@ xcuserdata
 *.pyc
 *.orig
 *.ninja_log
+fastlane/report.xml
