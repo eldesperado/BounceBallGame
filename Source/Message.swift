@@ -14,7 +14,8 @@ class Message: CCNode {
     weak var button: CCButton?
     weak var messageLabel: CCLabelTTF?
     var buttonActionClosure: MessageButtonActionClosure?
-    internal var style: MessageStyle?
+    var style: MessageStyle?
+    
     func didLoadFromCCB() {
         
     }
